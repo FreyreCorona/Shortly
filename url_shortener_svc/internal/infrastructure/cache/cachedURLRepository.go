@@ -33,9 +33,6 @@ func (c CachedURLRepository) GetByShortCode(code string) (domain.URL, error) {
 	if err == nil && cached != nil {
 		return *cached, nil
 	}
-	if err != nil {
-		return domain.URL{}, err
-	}
 
 	url, err := c.Repo.GetByShortCode(code)
 	if err != nil {
