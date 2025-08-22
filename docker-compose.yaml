@@ -1,0 +1,73 @@
+services:
+  #postgres17 database and apply migrations
+  db:
+    image: postgres:17
+    container_name: shortly_db
+    env_file:
+      - .env
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    volumes:
+      - shortly_db_volume:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  migrate:
+    image: migrate/migrate
+    container_name: migrations
+    depends_on:
+      - db
+    env_file:
+      - .env
+    volumes:
+      - ./migrations:/migrations
+    entrypoint: >
+      sh -c "
+      echo 'executing migrations';
+      migrate -path=/migrations -database=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable up
+      "
+
+  #microservices
+  cache:
+    image: valkey/valkey
+    container_name: shortly_cache
+    env_file:
+      - .env
+    entrypoint: >
+      sh -c '
+      echo "port ${VALKEY_PORT}" > valkey.conf &&
+      echo "requirepass \"${VALKEY_PASSWORD}\"" >> valkey.conf &&
+      echo "user ${VALKEY_USER} on allcommands allkeys >\"${VALKEY_PASSWORD}\"" >> valkey.conf &&
+      exec valkey-server valkey.conf'
+    restart: always
+    ports:
+      - ${VALKEY_PORT}:${VALKEY_PORT}
+
+  url_shortener_svc:
+    build: ./url_shortener_svc
+    container_name: url_shortener_svc
+    env_file:
+      - .env
+    depends_on:
+      migrate:
+        condition:
+          service_completed_successfully
+    ports:
+      ${URL_SHORTENER_SVC_PORT}:${URL_SHORTENER_SVC_PORT}
+
+  #analytics_svc:
+    #build: ./analitycs_svc
+    #container_name: analytics_svc
+    #env_file:
+    # - .env
+    #depends_on:
+    # migrate:
+    #   condition:
+    #     service_completed_successfully
+    #ports:
+    # ${ANALYTICS_SVC_PORT}:${ANALYTICS_SVC_PORT}
+volumes:
+  shortly_db_volume:
