@@ -40,7 +40,7 @@ services:
       sh -c '
       echo "port ${VALKEY_PORT}" > valkey.conf &&
       echo "requirepass \"${VALKEY_PASSWORD}\"" >> valkey.conf &&
-      echo "user ${VALKEY_USER} on allcommands allkeys >\"${VALKEY_PASSWORD}\"" >> valkey.conf &&
+      echo "user ${VALKEY_USERNAME} on allcommands allkeys >\"${VALKEY_PASSWORD}\"" >> valkey.conf &&
       exec valkey-server valkey.conf'
     restart: always
     ports:
