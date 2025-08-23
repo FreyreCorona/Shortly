@@ -5,8 +5,8 @@ services:
     container_name: shortly_db
     env_file:
       - .env
-    ports:
-      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    expose:
+      - ${POSTGRES_PORT}
     volumes:
       - shortly_db_volume:/var/lib/postgresql/data
     healthcheck:
@@ -14,7 +14,6 @@ services:
       interval: 5s
       timeout: 3s
       retries: 3
-
   migrate:
     image: migrate/migrate
     container_name: migrations
@@ -43,8 +42,20 @@ services:
       echo "user ${VALKEY_USERNAME} on allcommands allkeys >\"${VALKEY_PASSWORD}\"" >> valkey.conf &&
       exec valkey-server valkey.conf'
     restart: always
+    expose:
+      - ${VALKEY_PORT}
+
+  gateway:
+    image: krakend
+    container_name: krakend
     ports:
-      - ${VALKEY_PORT}:${VALKEY_PORT}
+      - ${KRAKEND_GATEWAY_PORT}:${KRAKEND_GATEWAY_PORT}
+    volumes:
+      - ./krakend:/etc/krakend
+    depends_on:
+      - url_shortener_svc
+    #command: ["krakend","run","-c","/etc/krakend/krakend.json","-d"]
+    restart: always
 
   url_shortener_svc:
     build: ./url_shortener_svc
@@ -55,8 +66,8 @@ services:
       migrate:
         condition:
           service_completed_successfully
-    ports:
-      ${URL_SHORTENER_SVC_PORT}:${URL_SHORTENER_SVC_PORT}
+    expose:
+      - ${URL_SHORTENER_SVC_PORT}
 
   #analytics_svc:
     #build: ./analitycs_svc
