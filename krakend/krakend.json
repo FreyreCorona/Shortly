@@ -1,0 +1,28 @@
+{
+  "version": 3,
+  "name": "shortly_gateway",
+  "port": 8080,
+  "endpoints": [
+    {
+      "endpoint": "/shortly",
+      "method": "POST",
+      "backend": [
+        {
+          "host": ["http://url_shortener_svc:8080"],
+          "url_pattern": "/shortly"
+        }
+      ]
+    },
+    {
+      "endpoint": "/{code}",
+      "method": "GET",
+      "backend": [
+        {
+          "host": ["http://url_shortener_svc:8080"],
+          "url_pattern": "/{code}"
+        }
+      ]
+    }
+  ]
+}
+
