@@ -1,0 +1,36 @@
+version: "2"
+run:
+  timeout: 5m
+  tests: true
+linters:
+  enable:
+    - govet
+    - errcheck
+    - staticcheck
+    - unused
+    - gosimple
+    - deadcode
+    - ineffassign
+    - misspell
+    - revive
+    - gofumpt
+
+linters-settings:
+  errcheck:
+    check-type-assertions: true
+    check-blank: true
+
+  revive:
+    severity: warning
+    rules:
+      - name: var-naming
+        arguments:
+          - ["ID", "URL", "HTTP"]
+      - name: indent-error-flow
+      - name: package-comments
+
+  gofumpt:
+    extra-rules: true
+
+issues:
+  max-same-issues: 3
