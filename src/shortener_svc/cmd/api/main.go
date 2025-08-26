@@ -21,15 +21,18 @@ func main() {
 		os.Getenv("POSGTGRES_PORT"),
 		os.Getenv("POSTGRES_DB"))
 
-	repo, err := db.NewPostgresDB(dsn)
+	repo, err := db.NewPostgresDBRepository(dsn)
 	if err != nil {
 		log.Fatalf("database connection error :%s", err.Error())
 	}
-	service := application.NewURLService(repo)
+	// stabish the adapter in the service
+	service := application.NewCreateURLService(repo)
 	handler := httpAdapter.NewHandler(service)
 
 	mux := http.NewServeMux()
 	handler.Routes(mux)
+
+	// running the service
 	runningPort, err := strconv.Atoi(os.Getenv("URL_SHORTENER_SVC_PORT"))
 	if err != nil {
 		log.Fatal("Uknown port")

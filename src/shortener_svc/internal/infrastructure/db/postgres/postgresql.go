@@ -15,8 +15,8 @@ type PostgresURLRepository struct {
 	DB *sql.DB
 }
 
-// NewPostgresDB opens a connection pool verify his integrity and return the URLRepository
-func NewPostgresDB(dsn string) (*PostgresURLRepository, error) {
+// NewPostgresDBRepository opens a connection pool verify his integrity and return the URLRepository
+func NewPostgresDBRepository(dsn string) (*PostgresURLRepository, error) {
 	conn, err := sql.Open("postgres", dsn)
 	if err != nil {
 		return nil, err
