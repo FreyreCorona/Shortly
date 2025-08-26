@@ -7,11 +7,9 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/FreyreCorona/Shortly/shortener_write/internal/application"
-	"github.com/FreyreCorona/Shortly/shortener_write/internal/infrastructure/cache"
-	"github.com/FreyreCorona/Shortly/shortener_write/internal/infrastructure/cache/valkey"
-	db "github.com/FreyreCorona/Shortly/shortener_write/internal/infrastructure/db/postgres"
-	httpAddapter "github.com/FreyreCorona/Shortly/shortener_write/internal/infrastructure/http"
+	"github.com/FreyreCorona/Shortly/src/shortener_svc/internal/application"
+	db "github.com/FreyreCorona/Shortly/src/shortener_svc/internal/infrastructure/db/postgres"
+	httpAdapter "github.com/FreyreCorona/Shortly/src/shortener_svc/internal/infrastructure/http"
 )
 
 func main() {
@@ -27,16 +25,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("database connection error :%s", err.Error())
 	}
-	c, err := valkey.NewValkeyCache(fmt.Sprintf("%s:%s", os.Getenv("VALKEY_ADDR"), os.Getenv("VALKEY_PORT")),
-		os.Getenv("VALKEY_USERNAME"),
-		os.Getenv("VALKEY_PASSWORD"))
-	if err != nil {
-		log.Fatalf("cache connection error :%s", err.Error())
-	}
-
-	r := cache.NewCachedURLRepository(repo, c)
-	service := application.NewURLService(r)
-	handler := httpAddapter.NewHandler(service)
+	service := application.NewURLService(repo)
+	handler := httpAdapter.NewHandler(service)
 
 	mux := http.NewServeMux()
 	handler.Routes(mux)

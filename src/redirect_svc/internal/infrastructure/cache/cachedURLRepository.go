@@ -4,7 +4,7 @@ package cache
 import (
 	"errors"
 
-	"github.com/FreyreCorona/Shortly/shortener_write/internal/domain"
+	"github.com/FreyreCorona/Shortly/src/redirect_svc/internal/domain"
 )
 
 // URLCacheRepository implement the accepted behavior of Cache systems

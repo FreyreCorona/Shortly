@@ -1,4 +1,4 @@
-module github.com/FreyreCorona/Shortly/shortener_write
+module github.com/FreyreCorona/Shortly/src/shortener_svc
 
 go 1.25
 

@@ -6,8 +6,8 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/FreyreCorona/Shortly/shortener_write/internal/domain"
-	"github.com/FreyreCorona/Shortly/shortener_write/internal/infrastructure/cache"
+	"github.com/FreyreCorona/Shortly/src/redirect_svc/internal/domain"
+	"github.com/FreyreCorona/Shortly/src/redirect_svc/internal/infrastructure/cache"
 	"github.com/valkey-io/valkey-go"
 )
 

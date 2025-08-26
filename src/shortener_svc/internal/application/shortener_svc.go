@@ -5,7 +5,7 @@ import (
 	"crypto/rand"
 	"encoding/base64"
 
-	"github.com/FreyreCorona/Shortly/shortener_write/internal/domain"
+	"github.com/FreyreCorona/Shortly/src/shortener_svc/internal/domain"
 )
 
 // CreateURLService principal use case service for generate short code by URL
