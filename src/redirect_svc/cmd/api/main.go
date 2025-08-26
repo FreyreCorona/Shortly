@@ -9,7 +9,8 @@ import (
 )
 
 func main() {
-	c, err := valkey.NewValkeyCache(fmt.Sprintf("%s:%s", os.Getenv("VALKEY_ADDR"), os.Getenv("VALKEY_PORT")),
+	_, err := valkey.NewValkeyCache(fmt.Sprintf("%s:%s", os.Getenv("VALKEY_ADDR"), os.Getenv("VALKEY_PORT")),
+
 		os.Getenv("VALKEY_USERNAME"),
 		os.Getenv("VALKEY_PASSWORD"))
 	if err != nil {

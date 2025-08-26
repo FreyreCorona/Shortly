@@ -18,20 +18,6 @@ func NewURLService(repo domain.URLRepository) *CreateURLService {
 	return &CreateURLService{Repo: repo}
 }
 
-// GetURL calls the repository for retrieve the URL object
-func (s CreateURLService) GetURL(code string) (domain.URL, error) {
-	if code == "" {
-		return domain.URL{}, domain.ErrCodeEmpty
-	}
-
-	url, err := s.Repo.GetByShortCode(code)
-	if err != nil {
-		return domain.URL{}, err
-	}
-
-	return url, nil
-}
-
 // CreateURL calls the repository for persist the current object URL created be rawURL
 func (s CreateURLService) CreateURL(rawURL string) (domain.URL, error) {
 	if rawURL == "" {
