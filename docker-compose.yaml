@@ -1,5 +1,4 @@
 services:
-  #postgres17 database and apply migrations
   db:
     image: postgres:17
     container_name: shortly_db
@@ -14,6 +13,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 3
+
   migrate:
     image: migrate/migrate
     container_name: migrations
@@ -22,14 +22,13 @@ services:
     env_file:
       - .env
     volumes:
-      - ./migrations:/migrations
+      - ./conf/migrations:/migrations
     entrypoint: >
       sh -c "
       echo 'executing migrations';
       migrate -path=/migrations -database=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable up
       "
 
-  #microservices
   cache:
     image: valkey/valkey
     container_name: shortly_cache
@@ -53,13 +52,13 @@ services:
     volumes:
       - ./krakend:/etc/krakend
     depends_on:
-      - url_shortener_svc
-    #command: ["krakend","run","-c","/etc/krakend/krakend.json","-d"]
+      - shortener_svc
+      - redirect_svc
     restart: always
 
-  shortener_write:
-    build: ./shortener_write
-    container_name: shortener_write
+  shortener_svc:
+    build: ./shortener_svc
+    container_name: shortener_svc
     env_file:
       - .env
     depends_on:
@@ -69,16 +68,17 @@ services:
     expose:
       - ${URL_SHORTENER_SVC_PORT}
 
-  #analytics_svc:
-    #build: ./analitycs_svc
-    #container_name: analytics_svc
-    #env_file:
-    # - .env
-    #depends_on:
-    # migrate:
-    #   condition:
-    #     service_completed_successfully
-    #ports:
-    # ${ANALYTICS_SVC_PORT}:${ANALYTICS_SVC_PORT}
+  redirect_svc:
+    build: ./redirect_svc
+    container_name: redirect_svc
+    env_file:
+     - .env
+    depends_on:
+     migrate:
+       condition:
+         service_completed_successfully
+    ports:
+     ${REDIRECT_SVC_PORT}:${REDIRECT_SVC_PORT}
+
 volumes:
   shortly_db_volume:
