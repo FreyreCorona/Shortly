@@ -7,11 +7,11 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/FreyreCorona/Shortly/url_shortener_svc/internal/application"
-	"github.com/FreyreCorona/Shortly/url_shortener_svc/internal/infrastructure/cache"
-	"github.com/FreyreCorona/Shortly/url_shortener_svc/internal/infrastructure/cache/valkey"
-	db "github.com/FreyreCorona/Shortly/url_shortener_svc/internal/infrastructure/db/postgres"
-	httpAddapter "github.com/FreyreCorona/Shortly/url_shortener_svc/internal/infrastructure/http"
+	"github.com/FreyreCorona/Shortly/shortener_write/internal/application"
+	"github.com/FreyreCorona/Shortly/shortener_write/internal/infrastructure/cache"
+	"github.com/FreyreCorona/Shortly/shortener_write/internal/infrastructure/cache/valkey"
+	db "github.com/FreyreCorona/Shortly/shortener_write/internal/infrastructure/db/postgres"
+	httpAddapter "github.com/FreyreCorona/Shortly/shortener_write/internal/infrastructure/http"
 )
 
 func main() {

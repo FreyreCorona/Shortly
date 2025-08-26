@@ -7,12 +7,12 @@ RUN go mod download
 
 COPY . . 
 
-RUN go build -o url_shortener_svc ./cmd/api
+RUN go build -o shortener_write ./cmd/api
 
 FROM alpine:3.22
 
 WORKDIR /app
 
-COPY --from=builder /app/url_shortener_svc .
+COPY --from=builder /app/shortener_write .
 
-CMD [ "./url_shortener_svc" ]
+CMD [ "./shortener_write" ]

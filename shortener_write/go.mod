@@ -1,6 +1,6 @@
-module github.com/FreyreCorona/Shortly/url_shortener_svc
+module github.com/FreyreCorona/Shortly/shortener_write
 
-go 1.24.6
+go 1.25
 
 require (
 	github.com/lib/pq v1.10.9
