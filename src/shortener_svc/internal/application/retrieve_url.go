@@ -1,0 +1,25 @@
+package application
+
+import "github.com/FreyreCorona/Shortly/src/shortener_svc/internal/domain"
+
+type RetrieveURLService struct {
+	Repo domain.URLRepository
+}
+
+func NewRetrieveURLService(repo domain.URLRepository) *RetrieveURLService {
+	return &RetrieveURLService{Repo: repo}
+}
+
+// GetURL calls the repository for retrieve the URL object
+func (s RetrieveURLService) GetURL(code string) (domain.URL, error) {
+	if code == "" {
+		return domain.URL{}, domain.ErrCodeEmpty
+	}
+
+	url, err := s.Repo.GetByShortCode(code)
+	if err != nil {
+		return domain.URL{}, err
+	}
+
+	return url, nil
+}
