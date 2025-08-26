@@ -20,7 +20,7 @@ func NewHandler(urlService *application.CreateURLService) *Handler {
 }
 
 func (h *Handler) Routes(mux *http.ServeMux) {
-	mux.HandleFunc("/shortly", h.createURL)
+	mux.HandleFunc("/shortly/create", h.createURL)
 }
 
 func (h *Handler) createURL(w http.ResponseWriter, r *http.Request) {

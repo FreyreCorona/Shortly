@@ -9,12 +9,12 @@
       "backend": [
         {
           "host": ["http://url_shortener_svc:8080"],
-          "url_pattern": "/shortly"
+          "url_pattern": "/shortly/create"
         }
       ]
     },
     {
-      "endpoint": "/{code}",
+      "endpoint": "/shortly/{code}",
       "method": "GET",
       "backend": [
         {
