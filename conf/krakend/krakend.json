@@ -4,7 +4,7 @@
   "port": 8080,
   "endpoints": [
     {
-      "endpoint": "/shortly",
+      "endpoint": "/shortly/create",
       "method": "POST",
       "backend": [
         {
@@ -19,7 +19,7 @@
       "backend": [
         {
           "host": ["http://url_shortener_svc:8080"],
-          "url_pattern": "/{code}"
+          "url_pattern": "/shortly/{code}"
         }
       ]
     }
