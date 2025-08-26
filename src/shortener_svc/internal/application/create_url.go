@@ -8,12 +8,11 @@ import (
 	"github.com/FreyreCorona/Shortly/src/shortener_svc/internal/domain"
 )
 
-// CreateURLService principal use case service for generate short code by URL
+// CreateURLService use case service for generate short code by URL
 type CreateURLService struct {
 	Repo domain.URLRepository
 }
 
-// NewURLService returns the service
 func NewURLService(repo domain.URLRepository) *CreateURLService {
 	return &CreateURLService{Repo: repo}
 }

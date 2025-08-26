@@ -2,6 +2,7 @@ package application
 
 import "github.com/FreyreCorona/Shortly/src/shortener_svc/internal/domain"
 
+// RetrieveURLService use case for retrieving the url object from the database
 type RetrieveURLService struct {
 	Repo domain.URLRepository
 }
