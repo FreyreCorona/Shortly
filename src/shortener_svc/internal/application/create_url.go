@@ -13,7 +13,7 @@ type CreateURLService struct {
 	Repo domain.URLRepository
 }
 
-func NewURLService(repo domain.URLRepository) *CreateURLService {
+func NewCreateURLService(repo domain.URLRepository) *CreateURLService {
 	return &CreateURLService{Repo: repo}
 }
 

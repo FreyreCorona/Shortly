@@ -21,7 +21,6 @@ func NewHandler(urlService *application.CreateURLService) *Handler {
 
 func (h *Handler) Routes(mux *http.ServeMux) {
 	mux.HandleFunc("/shortly", h.createURL)
-	mux.HandleFunc("/", h.redirect)
 }
 
 func (h *Handler) createURL(w http.ResponseWriter, r *http.Request) {
@@ -51,20 +50,4 @@ func (h *Handler) createURL(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		log.Printf("error sending a response :%s", err.Error())
 	}
-}
-
-func (h *Handler) redirect(w http.ResponseWriter, r *http.Request) {
-	short := r.URL.Path[1:] // gets all from http://->
-	if short == "" {
-		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
-		return
-	}
-	url, err := h.urlService.GetURL(short)
-	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		log.Printf("error retrieving url %s", err.Error())
-		return
-	}
-
-	http.Redirect(w, r, url.RawURL, http.StatusFound)
 }
