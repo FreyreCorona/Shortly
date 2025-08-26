@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/FreyreCorona/Shortly/src/redirect_svc/internal/domain"
-	"github.com/FreyreCorona/Shortly/src/redirect_svc/internal/infrastructure/cache"
 	"github.com/valkey-io/valkey-go"
 )
 
@@ -45,7 +44,7 @@ func (c ValkeyCachedURLRepository) Get(code string) (*domain.URL, error) {
 
 	data, err := c.Client.Do(ctx, c.Client.B().Get().Key(code).Build()).ToString()
 	if err != nil {
-		return nil, cache.ErrNoCachedURL
+		return nil, domain.ErrNoCachedURL
 	}
 	var url domain.URL
 	err = json.Unmarshal([]byte(data), &url)

@@ -14,13 +14,19 @@ type URL struct {
 	CreatedAt time.Time
 }
 
-// URLRepository used to define the accepted behavior of the URL object on a database
+// URLCacheRepository used to define the accepted behavior of the URL object on cache
+type URLCacheRepository interface {
+	Get(code string) (*URL, error)
+	Set(url URL) error
+}
+
+// URLRepository used to define the accepted behavior of URL source
 type URLRepository interface {
-	Persist(url URL) (URL, error)
 	GetByShortCode(code string) (URL, error)
 }
 
 var (
 	ErrCodeEmpty   = errors.New("code cannot be empty")
-	ErrRawURLEmpty = errors.New("rawURL cannot be empty")
+	ErrNoCachedURL = errors.New("specified url not found on cache")
+	ErrNoURL       = errors.New("specified url not exist")
 )
