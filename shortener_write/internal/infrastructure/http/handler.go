@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/FreyreCorona/Shortly/url_shortener_svc/internal/application"
+	"github.com/FreyreCorona/Shortly/shortener_write/internal/application"
 )
 
 type Handler struct {

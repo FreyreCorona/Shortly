@@ -6,7 +6,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/FreyreCorona/Shortly/url_shortener_svc/internal/domain"
+	"github.com/FreyreCorona/Shortly/shortener_write/internal/domain"
 	_ "github.com/lib/pq"
 )
 

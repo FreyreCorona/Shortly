@@ -57,9 +57,9 @@ services:
     #command: ["krakend","run","-c","/etc/krakend/krakend.json","-d"]
     restart: always
 
-  url_shortener_svc:
-    build: ./url_shortener_svc
-    container_name: url_shortener_svc
+  shortener_write:
+    build: ./shortener_write
+    container_name: shortener_write
     env_file:
       - .env
     depends_on:
