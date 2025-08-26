@@ -50,14 +50,14 @@ services:
     ports:
       - ${KRAKEND_GATEWAY_PORT}:${KRAKEND_GATEWAY_PORT}
     volumes:
-      - ./krakend:/etc/krakend
+      - ./conf/krakend:/etc/krakend
     depends_on:
       - shortener_svc
       - redirect_svc
     restart: always
 
   shortener_svc:
-    build: ./shortener_svc
+    build: ./src/shortener_svc
     container_name: shortener_svc
     env_file:
       - .env
@@ -69,12 +69,12 @@ services:
       - ${URL_SHORTENER_SVC_PORT}
 
   redirect_svc:
-    build: ./redirect_svc
+    build: ./src/redirect_svc
     container_name: redirect_svc
     env_file:
      - .env
     depends_on:
-     migrate:
+     cache:
        condition:
          service_completed_successfully
     ports:
