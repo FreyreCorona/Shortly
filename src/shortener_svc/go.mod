@@ -1,5 +1,17 @@
 module github.com/FreyreCorona/Shortly/src/shortener_svc
 
-go 1.25
+go 1.25.0
 
-require github.com/lib/pq v1.10.9
+require (
+	github.com/FreyreCorona/Shortly/protos v0.0.0-20250827131111-a7fb79a163af
+	github.com/lib/pq v1.10.9
+	google.golang.org/grpc v1.75.0
+)
+
+require (
+	golang.org/x/net v0.41.0 // indirect
+	golang.org/x/sys v0.33.0 // indirect
+	golang.org/x/text v0.26.0 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250707201910-8d1bb00bc6a7 // indirect
+	google.golang.org/protobuf v1.36.8 // indirect
+)
