@@ -1,0 +1,18 @@
+syntax="proto3";
+
+package proto;
+
+option go_package = "./protos";
+
+service GetURL{
+  rpc GetURLByShortCode(GetURLRequest) returns (GetURLResponse);
+}
+
+message GetURLRequest{
+  string code = 1;
+}
+
+message GetURLResponse{
+  string raw_url = 1;
+  string code = 2;
+}
