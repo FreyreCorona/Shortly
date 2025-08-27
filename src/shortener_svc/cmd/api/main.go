@@ -9,6 +9,7 @@ import (
 
 	"github.com/FreyreCorona/Shortly/src/shortener_svc/internal/application"
 	db "github.com/FreyreCorona/Shortly/src/shortener_svc/internal/infrastructure/db/postgres"
+	"github.com/FreyreCorona/Shortly/src/shortener_svc/internal/infrastructure/grpc"
 	httpAdapter "github.com/FreyreCorona/Shortly/src/shortener_svc/internal/infrastructure/http"
 )
 
@@ -33,8 +34,9 @@ func main() {
 	handler.Routes(mux)
 
 	// stablish the adapter in the service RetrieveURL
-	// TODO: IMPLEMENT AND REFERENCE REPO OBJECT FOR NewRetrieveURLService PARAMETHER
+	// TODO: IMPLEMENT REPO OBJECT
 	RetrieveURLService := application.NewRetrieveURLService(repo)
+	gRPCServer := grpc.NewGRPCServer(*RetrieveURLService)
 
 	// running the service
 	runningPort, err := strconv.Atoi(os.Getenv("URL_SHORTENER_SVC_PORT"))
