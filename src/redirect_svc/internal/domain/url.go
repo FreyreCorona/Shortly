@@ -3,15 +3,12 @@ package domain
 
 import (
 	"errors"
-	"time"
 )
 
 // URL the main type of the Shortly
 type URL struct {
-	ID        int64
 	RawURL    string
 	ShortCode string
-	CreatedAt time.Time
 }
 
 // URLCacheRepository used to define the accepted behavior of the URL object on cache
