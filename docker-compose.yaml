@@ -67,6 +67,7 @@ services:
           service_completed_successfully
     expose:
       - ${URL_SHORTENER_SVC_PORT}
+      - ${URL_SHORTENER_SVC_GRPC_PORT}
 
   redirect_svc:
     build: ./src/redirect_svc

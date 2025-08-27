@@ -3,14 +3,18 @@ package main
 import (
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
-	"strconv"
+	"sync"
 
+	"github.com/FreyreCorona/Shortly/protos"
 	"github.com/FreyreCorona/Shortly/src/shortener_svc/internal/application"
+	"github.com/FreyreCorona/Shortly/src/shortener_svc/internal/domain"
 	db "github.com/FreyreCorona/Shortly/src/shortener_svc/internal/infrastructure/db/postgres"
-	"github.com/FreyreCorona/Shortly/src/shortener_svc/internal/infrastructure/grpc"
+	grpcadapter "github.com/FreyreCorona/Shortly/src/shortener_svc/internal/infrastructure/grpc"
 	httpAdapter "github.com/FreyreCorona/Shortly/src/shortener_svc/internal/infrastructure/http"
+	"google.golang.org/grpc"
 )
 
 func main() {
@@ -19,30 +23,64 @@ func main() {
 		os.Getenv("POSTGRES_USER"),
 		os.Getenv("POSTGRES_PASSWORD"),
 		os.Getenv("POSTGRES_HOST"),
-		os.Getenv("POSGTGRES_PORT"),
+		os.Getenv("POSTGRES_PORT"),
 		os.Getenv("POSTGRES_DB"))
 
 	repo, err := db.NewPostgresDBRepository(dsn)
 	if err != nil {
 		log.Fatalf("database connection error :%s", err.Error())
 	}
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+
 	// stablish the adapter in the service CreateURL
+	go func() {
+		defer wg.Done()
+		if err := StartGRPCServer(repo); err != nil {
+			log.Printf("error on GRPC server :%v", err)
+		}
+	}()
+
+	// stablish the adapter in the service RetrieveURL
+	go func() {
+		wg.Done()
+		if err := StartHTTPHandler(repo); err != nil {
+			log.Printf("error on HTTP handler :%v", err)
+		}
+	}()
+
+	wg.Wait()
+}
+
+func StartGRPCServer(repo domain.URLRepository) error {
+	RetrieveURLService := application.NewRetrieveURLService(repo)
+	gRPCHandler := grpcadapter.NewGRPCServer(*RetrieveURLService)
+
+	server := grpc.NewServer()
+	protos.RegisterGetURLServer(server, gRPCHandler)
+
+	port := ":" + os.Getenv("URL_SHORTENER_SVC_GRPC_PORT")
+
+	list, err := net.Listen("tcp", port)
+	if err != nil {
+		return fmt.Errorf("cannot listen on tcp connection at %s :%w", port, err)
+	}
+
+	log.Printf("gRPC server running on %s", port)
+	return server.Serve(list)
+}
+
+func StartHTTPHandler(repo domain.URLRepository) error {
 	CreateURLService := application.NewCreateURLService(repo)
 	handler := httpAdapter.NewHandler(CreateURLService)
 
 	mux := http.NewServeMux()
 	handler.Routes(mux)
 
-	// stablish the adapter in the service RetrieveURL
-	// TODO: IMPLEMENT REPO OBJECT
-	RetrieveURLService := application.NewRetrieveURLService(repo)
-	gRPCServer := grpc.NewGRPCServer(*RetrieveURLService)
+	port := ":" + os.Getenv("URL_SHORTENER_SVC_PORT")
 
-	// running the service
-	runningPort, err := strconv.Atoi(os.Getenv("URL_SHORTENER_SVC_PORT"))
-	if err != nil {
-		log.Fatal("Uknown port")
-	}
-	fmt.Printf("Service running on : %d \n", runningPort)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%d", runningPort), mux))
+	log.Printf("HTTP handler running on %s", port)
+
+	return http.ListenAndServe(port, mux)
 }
