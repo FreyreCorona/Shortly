@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v6.32.0
-// source: protos/shortener_svc.proto
+// source: shortener_svc.proto
 
 package protos
 
@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	GetURL_GetURLByShortCode_FullMethodName = "/proto.GetURL/GetURLByShortCode"
+	GetURL_GetURLByShortCode_FullMethodName = "/protos.GetURL/GetURLByShortCode"
 )
 
 // GetURLClient is the client API for GetURL service.
@@ -108,7 +108,7 @@ func _GetURL_GetURLByShortCode_Handler(srv interface{}, ctx context.Context, dec
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var GetURL_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "proto.GetURL",
+	ServiceName: "protos.GetURL",
 	HandlerType: (*GetURLServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -117,5 +117,5 @@ var GetURL_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "protos/shortener_svc.proto",
+	Metadata: "shortener_svc.proto",
 }
