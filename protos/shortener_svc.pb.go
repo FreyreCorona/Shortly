@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.8
 // 	protoc        v6.32.0
-// source: protos/shortener_svc.proto
+// source: shortener_svc.proto
 
 package protos
 
@@ -30,7 +30,7 @@ type GetURLRequest struct {
 
 func (x *GetURLRequest) Reset() {
 	*x = GetURLRequest{}
-	mi := &file_protos_shortener_svc_proto_msgTypes[0]
+	mi := &file_shortener_svc_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -42,7 +42,7 @@ func (x *GetURLRequest) String() string {
 func (*GetURLRequest) ProtoMessage() {}
 
 func (x *GetURLRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_shortener_svc_proto_msgTypes[0]
+	mi := &file_shortener_svc_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -55,7 +55,7 @@ func (x *GetURLRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetURLRequest.ProtoReflect.Descriptor instead.
 func (*GetURLRequest) Descriptor() ([]byte, []int) {
-	return file_protos_shortener_svc_proto_rawDescGZIP(), []int{0}
+	return file_shortener_svc_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *GetURLRequest) GetCode() string {
@@ -75,7 +75,7 @@ type GetURLResponse struct {
 
 func (x *GetURLResponse) Reset() {
 	*x = GetURLResponse{}
-	mi := &file_protos_shortener_svc_proto_msgTypes[1]
+	mi := &file_shortener_svc_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -87,7 +87,7 @@ func (x *GetURLResponse) String() string {
 func (*GetURLResponse) ProtoMessage() {}
 
 func (x *GetURLResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_shortener_svc_proto_msgTypes[1]
+	mi := &file_shortener_svc_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -100,7 +100,7 @@ func (x *GetURLResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetURLResponse.ProtoReflect.Descriptor instead.
 func (*GetURLResponse) Descriptor() ([]byte, []int) {
-	return file_protos_shortener_svc_proto_rawDescGZIP(), []int{1}
+	return file_shortener_svc_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *GetURLResponse) GetRawUrl() string {
@@ -117,40 +117,39 @@ func (x *GetURLResponse) GetCode() string {
 	return ""
 }
 
-var File_protos_shortener_svc_proto protoreflect.FileDescriptor
+var File_shortener_svc_proto protoreflect.FileDescriptor
 
-const file_protos_shortener_svc_proto_rawDesc = "" +
+const file_shortener_svc_proto_rawDesc = "" +
 	"\n" +
-	"\x1aprotos/shortener_svc.proto\x12\x05proto\"#\n" +
+	"\x13shortener_svc.proto\x12\x06protos\"#\n" +
 	"\rGetURLRequest\x12\x12\n" +
 	"\x04code\x18\x01 \x01(\tR\x04code\"=\n" +
 	"\x0eGetURLResponse\x12\x17\n" +
 	"\araw_url\x18\x01 \x01(\tR\x06rawUrl\x12\x12\n" +
-	"\x04code\x18\x02 \x01(\tR\x04code2J\n" +
-	"\x06GetURL\x12@\n" +
-	"\x11GetURLByShortCode\x12\x14.proto.GetURLRequest\x1a\x15.proto.GetURLResponseB\n" +
-	"Z\b./protosb\x06proto3"
+	"\x04code\x18\x02 \x01(\tR\x04code2L\n" +
+	"\x06GetURL\x12B\n" +
+	"\x11GetURLByShortCode\x12\x15.protos.GetURLRequest\x1a\x16.protos.GetURLResponseB(Z&github.com/FreyreCorona/Shortly/protosb\x06proto3"
 
 var (
-	file_protos_shortener_svc_proto_rawDescOnce sync.Once
-	file_protos_shortener_svc_proto_rawDescData []byte
+	file_shortener_svc_proto_rawDescOnce sync.Once
+	file_shortener_svc_proto_rawDescData []byte
 )
 
-func file_protos_shortener_svc_proto_rawDescGZIP() []byte {
-	file_protos_shortener_svc_proto_rawDescOnce.Do(func() {
-		file_protos_shortener_svc_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_protos_shortener_svc_proto_rawDesc), len(file_protos_shortener_svc_proto_rawDesc)))
+func file_shortener_svc_proto_rawDescGZIP() []byte {
+	file_shortener_svc_proto_rawDescOnce.Do(func() {
+		file_shortener_svc_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_shortener_svc_proto_rawDesc), len(file_shortener_svc_proto_rawDesc)))
 	})
-	return file_protos_shortener_svc_proto_rawDescData
+	return file_shortener_svc_proto_rawDescData
 }
 
-var file_protos_shortener_svc_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_protos_shortener_svc_proto_goTypes = []any{
-	(*GetURLRequest)(nil),  // 0: proto.GetURLRequest
-	(*GetURLResponse)(nil), // 1: proto.GetURLResponse
+var file_shortener_svc_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_shortener_svc_proto_goTypes = []any{
+	(*GetURLRequest)(nil),  // 0: protos.GetURLRequest
+	(*GetURLResponse)(nil), // 1: protos.GetURLResponse
 }
-var file_protos_shortener_svc_proto_depIdxs = []int32{
-	0, // 0: proto.GetURL.GetURLByShortCode:input_type -> proto.GetURLRequest
-	1, // 1: proto.GetURL.GetURLByShortCode:output_type -> proto.GetURLResponse
+var file_shortener_svc_proto_depIdxs = []int32{
+	0, // 0: protos.GetURL.GetURLByShortCode:input_type -> protos.GetURLRequest
+	1, // 1: protos.GetURL.GetURLByShortCode:output_type -> protos.GetURLResponse
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -158,26 +157,26 @@ var file_protos_shortener_svc_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_protos_shortener_svc_proto_init() }
-func file_protos_shortener_svc_proto_init() {
-	if File_protos_shortener_svc_proto != nil {
+func init() { file_shortener_svc_proto_init() }
+func file_shortener_svc_proto_init() {
+	if File_shortener_svc_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_protos_shortener_svc_proto_rawDesc), len(file_protos_shortener_svc_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_shortener_svc_proto_rawDesc), len(file_shortener_svc_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_protos_shortener_svc_proto_goTypes,
-		DependencyIndexes: file_protos_shortener_svc_proto_depIdxs,
-		MessageInfos:      file_protos_shortener_svc_proto_msgTypes,
+		GoTypes:           file_shortener_svc_proto_goTypes,
+		DependencyIndexes: file_shortener_svc_proto_depIdxs,
+		MessageInfos:      file_shortener_svc_proto_msgTypes,
 	}.Build()
-	File_protos_shortener_svc_proto = out.File
-	file_protos_shortener_svc_proto_goTypes = nil
-	file_protos_shortener_svc_proto_depIdxs = nil
+	File_shortener_svc_proto = out.File
+	file_shortener_svc_proto_goTypes = nil
+	file_shortener_svc_proto_depIdxs = nil
 }
