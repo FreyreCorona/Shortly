@@ -8,16 +8,16 @@ import (
 )
 
 type RedirectionService struct {
-	Cache domain.URLCacheRepository
-	Repo  domain.URLRepository
+	cache domain.URLCacheRepository
+	repo  domain.URLRepository
 }
 
 func NewRedirectionService(cache domain.URLCacheRepository, repo domain.URLRepository) *RedirectionService {
-	return &RedirectionService{Repo: repo}
+	return &RedirectionService{repo: repo}
 }
 
 func (s *RedirectionService) GetURL(code string) (*domain.URL, error) {
-	cached, err := s.Cache.Get(code)
+	cached, err := s.cache.Get(code)
 	if err != nil && !errors.Is(err, domain.ErrNoCachedURL) {
 		return nil, err // unespected
 	}
@@ -26,12 +26,12 @@ func (s *RedirectionService) GetURL(code string) (*domain.URL, error) {
 	}
 
 	// search on source
-	url, err := s.Repo.GetByShortCode(code)
+	url, err := s.repo.GetByShortCode(code)
 	if err != nil {
 		return nil, err
 	}
 
-	err = s.Cache.Set(url)
+	err = s.cache.Set(url)
 	if err != nil {
 		return nil, err
 	}
