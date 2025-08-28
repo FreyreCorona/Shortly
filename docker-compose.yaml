@@ -58,8 +58,7 @@ services:
 
   shortener_svc:
     build: ./src/shortener_svc
-    container_name: shortener_svc
-    env_file:
+    container_name: ${URL_SHORTENER_SVC_HOST}
       - .env
     depends_on:
       migrate:
@@ -71,7 +70,7 @@ services:
 
   redirect_svc:
     build: ./src/redirect_svc
-    container_name: redirect_svc
+    container_name: ${REDIRECT_SVC_HOST}
     env_file:
      - .env
     depends_on:
