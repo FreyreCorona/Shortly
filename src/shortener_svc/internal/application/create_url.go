@@ -10,11 +10,11 @@ import (
 
 // CreateURLService use case service for generate short code by URL
 type CreateURLService struct {
-	Repo domain.URLRepository
+	repo domain.URLRepository
 }
 
 func NewCreateURLService(repo domain.URLRepository) *CreateURLService {
-	return &CreateURLService{Repo: repo}
+	return &CreateURLService{repo: repo}
 }
 
 // CreateURL calls the repository for persist the current object URL created be rawURL
@@ -28,7 +28,7 @@ func (s CreateURLService) CreateURL(rawURL string) (domain.URL, error) {
 		return domain.URL{}, err
 	}
 	url := domain.URL{RawURL: rawURL, ShortCode: shortCode}
-	url, err = s.Repo.Persist(url)
+	url, err = s.repo.Persist(url)
 	if err != nil {
 		return domain.URL{}, nil
 	}
