@@ -8,6 +8,7 @@ import (
 	"github.com/FreyreCorona/Shortly/protos"
 	"github.com/FreyreCorona/Shortly/src/redirect_svc/internal/domain"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type GRPCRepository struct {
@@ -15,7 +16,7 @@ type GRPCRepository struct {
 }
 
 func NewGRPCRepository(address string) (*GRPCRepository, error) {
-	conn, err := grpc.NewClient(address, nil)
+	conn, err := grpc.NewClient(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return nil, err
 	}

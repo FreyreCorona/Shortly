@@ -42,7 +42,7 @@ func main() {
 }
 
 func StartHTTPHandler(cache domain.URLCacheRepository, repo domain.URLRepository) error {
-	service := application.NewRedirectionService(cache, nil)
+	service := application.NewRedirectionService(cache, repo)
 	handler := httpAdapter.NewHandler(service)
 
 	mux := http.NewServeMux()
