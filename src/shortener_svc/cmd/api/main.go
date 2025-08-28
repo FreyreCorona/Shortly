@@ -32,23 +32,22 @@ func main() {
 	}
 
 	var wg sync.WaitGroup
-	wg.Add(2)
 
 	// stablish the adapter in the service CreateURL
-	go func() {
+	wg.Go(func() {
 		defer wg.Done()
 		if err := StartGRPCServer(repo); err != nil {
 			log.Printf("error on GRPC server :%v", err)
 		}
-	}()
+	})
 
 	// stablish the adapter in the service RetrieveURL
-	go func() {
+	wg.Go(func() {
 		wg.Done()
 		if err := StartHTTPHandler(repo); err != nil {
 			log.Printf("error on HTTP handler :%v", err)
 		}
-	}()
+	})
 
 	wg.Wait()
 }
