@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "name": "shortly_gateway",
+  "name": "krakend",
   "port": 8080,
   "endpoints": [
     {
@@ -8,7 +8,7 @@
       "method": "POST",
       "backend": [
         {
-          "host": ["http://url_shortener_svc:8080"],
+          "host": ["http://shortener_svc:8080"],
           "url_pattern": "/shortly/create"
         }
       ]
@@ -18,7 +18,7 @@
       "method": "GET",
       "backend": [
         {
-          "host": ["http://url_shortener_svc:8080"],
+          "host": ["http://redirect_svc:8080"],
           "url_pattern": "/shortly/{code}"
         }
       ]
