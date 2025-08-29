@@ -51,9 +51,6 @@ services:
       - ${KRAKEND_GATEWAY_PORT}:${KRAKEND_GATEWAY_PORT}
     volumes:
       - ./conf/krakend:/etc/krakend
-    depends_on:
-      - shortener_svc
-      - redirect_svc
     restart: always
 
   shortener_svc:
@@ -75,11 +72,12 @@ services:
     env_file:
       - .env
     depends_on:
-     cache:
-       condition:
-         service_completed_successfully
-    ports:
-     ${REDIRECT_SVC_PORT}:${REDIRECT_SVC_PORT}
+      shortener_svc:
+        condition:
+          service_completed_successfully
+    expose:
+      - ${REDIRECT_SVC_PORT}
+      - ${REDIRECT_SVC_GRPC_PORT}
 
 volumes:
   shortly_db_volume:
