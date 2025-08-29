@@ -17,7 +17,6 @@ import (
 func main() {
 	// Valkey adapter
 	cache, err := valkey.NewValkeyCache(fmt.Sprintf("%s:%s", os.Getenv("VALKEY_HOST"), os.Getenv("VALKEY_PORT")),
-
 		os.Getenv("VALKEY_USERNAME"),
 		os.Getenv("VALKEY_PASSWORD"))
 	if err != nil {
