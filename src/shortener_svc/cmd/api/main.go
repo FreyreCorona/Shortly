@@ -35,7 +35,6 @@ func main() {
 
 	// stablish the adapter in the service CreateURL
 	wg.Go(func() {
-		defer wg.Done()
 		if err := StartGRPCServer(repo); err != nil {
 			log.Printf("error on GRPC server :%v", err)
 		}
@@ -43,7 +42,6 @@ func main() {
 
 	// stablish the adapter in the service RetrieveURL
 	wg.Go(func() {
-		wg.Done()
 		if err := StartHTTPHandler(repo); err != nil {
 			log.Printf("error on HTTP handler :%v", err)
 		}
