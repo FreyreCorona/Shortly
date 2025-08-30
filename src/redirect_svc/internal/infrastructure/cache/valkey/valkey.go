@@ -33,12 +33,11 @@ func NewValkeyCache(address, username, password string) (*ValkeyCachedURLReposit
 	if err != nil {
 		return nil, err
 	}
-
 	return &ValkeyCachedURLRepository{Client: c}, nil
 }
 
 // Get retrieves the values from the cache memory
-func (c ValkeyCachedURLRepository) Get(code string) (*domain.URL, error) {
+func (c *ValkeyCachedURLRepository) Get(code string) (*domain.URL, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -56,7 +55,7 @@ func (c ValkeyCachedURLRepository) Get(code string) (*domain.URL, error) {
 }
 
 // Set on the cache the value of url
-func (c ValkeyCachedURLRepository) Set(url domain.URL) error {
+func (c *ValkeyCachedURLRepository) Set(url domain.URL) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 

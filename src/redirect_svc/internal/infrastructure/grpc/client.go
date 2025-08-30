@@ -44,6 +44,9 @@ func (r *GRPCRepository) GetByShortCode(code string) (domain.URL, error) {
 	if err != nil {
 		return domain.URL{}, err
 	}
+	if res == nil || res.RawUrl == "" {
+		return domain.URL{}, domain.ErrNoURL
+	}
 
 	return domain.URL{RawURL: res.RawUrl, ShortCode: res.Code}, nil
 }
