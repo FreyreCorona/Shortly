@@ -4,6 +4,7 @@ package http
 import (
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/FreyreCorona/Shortly/src/redirect_svc/internal/application"
 )
@@ -21,14 +22,14 @@ func (h *Handler) Routes(mux *http.ServeMux) {
 }
 
 func (h *Handler) redirect(w http.ResponseWriter, r *http.Request) {
-	short := r.URL.Path[1:] // gets all from http://->
+	short := strings.TrimPrefix(r.URL.Path, "/shortly/") // gets all from http://address:port/shortly/ ->
 	if short == "" {
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
 	url, err := h.service.GetURL(short)
 	if err != nil {
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		log.Printf("error retrieving url %s", err.Error())
 		return
 	}

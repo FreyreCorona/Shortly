@@ -13,7 +13,7 @@ type RedirectionService struct {
 }
 
 func NewRedirectionService(cache domain.URLCacheRepository, repo domain.URLRepository) *RedirectionService {
-	return &RedirectionService{repo: repo}
+	return &RedirectionService{cache: cache, repo: repo}
 }
 
 func (s *RedirectionService) GetURL(code string) (*domain.URL, error) {
