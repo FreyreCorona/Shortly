@@ -16,6 +16,7 @@
     {
       "endpoint": "/shortly/{code}",
       "method": "GET",
+      "output_encoding": "no-op",
       "backend": [
         {
           "host": ["http://redirect_svc:8080"],
