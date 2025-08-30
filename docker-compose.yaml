@@ -13,6 +13,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 3
+    restart: always
 
   migrate:
     image: migrate/migrate
@@ -23,6 +24,7 @@ services:
       - .env
     volumes:
       - ./conf/migrations:/migrations
+    restart: always
     entrypoint: >
       sh -c "
       echo 'executing migrations';
@@ -58,10 +60,7 @@ services:
     container_name: shortener_svc
     env_file:
       - .env
-    depends_on:
-      migrate:
-        condition:
-          service_completed_successfully
+    restart: always
     expose:
       - ${URL_SHORTENER_SVC_PORT}
       - ${URL_SHORTENER_SVC_GRPC_PORT}
@@ -71,10 +70,7 @@ services:
     container_name: redirect_svc
     env_file:
       - .env
-    depends_on:
-      shortener_svc:
-        condition:
-          service_completed_successfully
+    restart: always
     expose:
       - ${REDIRECT_SVC_PORT}
       - ${REDIRECT_SVC_GRPC_PORT}
