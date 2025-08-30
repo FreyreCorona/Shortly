@@ -19,7 +19,8 @@
       "backend": [
         {
           "host": ["http://redirect_svc:8080"],
-          "url_pattern": "/shortly/{code}"
+          "url_pattern": "/shortly/{code}",
+          "encoding":"no-op"
         }
       ]
     }
