@@ -33,7 +33,7 @@ func main() {
 	// stablish the adapter in the service
 	wg.Go(func() {
 		if err := StartHTTPHandler(cache, repo); err != nil {
-			log.Printf("error on http handler :%v", err)
+			log.Fatalf("error on http handler :%v", err)
 		}
 	})
 
