@@ -36,14 +36,14 @@ func main() {
 	// stablish the adapter in the service CreateURL
 	wg.Go(func() {
 		if err := StartGRPCServer(repo); err != nil {
-			log.Printf("error on GRPC server :%v", err)
+			log.Fatalf("error on GRPC server :%v", err)
 		}
 	})
 
 	// stablish the adapter in the service RetrieveURL
 	wg.Go(func() {
 		if err := StartHTTPHandler(repo); err != nil {
-			log.Printf("error on HTTP handler :%v", err)
+			log.Fatalf("error on HTTP handler :%v", err)
 		}
 	})
 
