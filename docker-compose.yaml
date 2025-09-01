@@ -55,6 +55,15 @@ services:
       - ./conf/krakend:/etc/krakend
     restart: always
 
+  queue:
+    image: rabbitmq:4
+    container_name: queue
+    restart: always
+    env_file:
+      - .env
+    expose:
+      - ${RABBITMQ_PORT}
+
   shortener_svc:
     build: ./src/shortener_svc
     container_name: shortener_svc
