@@ -41,9 +41,9 @@ func main() {
 		}
 	})
 
-	publisher, err := rabbitmq.NewProducerPublisher(fmt.Sprintf("%s:%s@%s:%s/",
+	publisher, err := rabbitmq.NewProducerPublisher(fmt.Sprintf("amqp://%s:%s@%s:%s/",
 		os.Getenv("RABBITMQ_DEFAULT_USER"),
-		os.Getenv("RABBITMQ_DEFAULT_PASSWORD"),
+		os.Getenv("RABBITMQ_DEFAULT_PASS"),
 		os.Getenv("RABBITMQ_HOST"),
 		os.Getenv("RABBITMQ_PORT")))
 	if err != nil {
