@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -12,6 +13,7 @@ import (
 	"github.com/FreyreCorona/Shortly/src/redirect_svc/internal/infrastructure/cache/valkey"
 	"github.com/FreyreCorona/Shortly/src/redirect_svc/internal/infrastructure/grpc"
 	httpAdapter "github.com/FreyreCorona/Shortly/src/redirect_svc/internal/infrastructure/http"
+	"github.com/FreyreCorona/Shortly/src/redirect_svc/internal/infrastructure/rabbitmq"
 )
 
 func main() {
@@ -37,6 +39,17 @@ func main() {
 		}
 	})
 
+	address := fmt.Sprintf("amqp://%s:%s@%s:%s/",
+		os.Getenv("RABBITMQ_DEFAULT_USER"),
+		os.Getenv("RABBITMQ_DEFAULT_PASS"),
+		os.Getenv("RABBITMQ_HOST"),
+		os.Getenv("RABBITMQ_PORT"))
+
+	wg.Go(func() {
+		if err := StartQueueConsumer(cache, address); err != nil {
+			log.Fatalf("error on queueConsumer :%v", err)
+		}
+	})
 	wg.Wait()
 }
 
@@ -52,4 +65,22 @@ func StartHTTPHandler(cache domain.URLCacheRepository, repo domain.URLRepository
 	log.Printf("HTTP handler running on %s", port)
 
 	return http.ListenAndServe(port, mux)
+}
+
+func StartQueueConsumer(cache domain.URLCacheRepository, address string) error {
+	service := application.NewSetURLService(cache)
+	consumer, err := rabbitmq.NewConsumer(*service, address)
+	if err != nil {
+		return err
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	log.Println("Start listening for messages from the queue")
+	err = consumer.Listen(ctx)
+	if err != nil {
+		return err
+	}
+	defer ctx.Done()
+	return nil
 }
