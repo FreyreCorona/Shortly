@@ -10,12 +10,12 @@ import (
 )
 
 type Handler struct {
-	urlService *application.CreateURLService
+	urlService application.CreateURLService
 }
 
 type JSONBody map[string]any
 
-func NewHandler(urlService *application.CreateURLService) *Handler {
+func NewHandler(urlService application.CreateURLService) *Handler {
 	return &Handler{urlService: urlService}
 }
 
