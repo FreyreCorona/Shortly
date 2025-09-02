@@ -46,6 +46,9 @@ func main() {
 		os.Getenv("RABBITMQ_DEFAULT_PASSWORD"),
 		os.Getenv("RABBITMQ_HOST"),
 		os.Getenv("RABBITMQ_PORT")))
+	if err != nil {
+		log.Fatalf("error on rabbitmq producer :%v", err)
+	}
 
 	// stablish the adapter in the service RetrieveURL
 	wg.Go(func() {
