@@ -45,6 +45,7 @@ func main() {
 		os.Getenv("RABBITMQ_HOST"),
 		os.Getenv("RABBITMQ_PORT"))
 
+	// stablish listening on message queue
 	wg.Go(func() {
 		if err := StartQueueConsumer(cache, address); err != nil {
 			log.Fatalf("error on queueConsumer :%v", err)
