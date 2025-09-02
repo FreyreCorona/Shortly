@@ -5,6 +5,7 @@ go 1.25.0
 require (
 	github.com/FreyreCorona/Shortly/protos v0.0.0-20250827131111-a7fb79a163af
 	github.com/lib/pq v1.10.9
+	github.com/rabbitmq/amqp091-go v1.10.0
 	google.golang.org/grpc v1.75.0
 )
 
