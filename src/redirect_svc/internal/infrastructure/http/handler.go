@@ -10,10 +10,10 @@ import (
 )
 
 type Handler struct {
-	service *application.RedirectionService
+	service *application.GetURLService
 }
 
-func NewHandler(urlService *application.RedirectionService) *Handler {
+func NewHandler(urlService *application.GetURLService) *Handler {
 	return &Handler{service: urlService}
 }
 
