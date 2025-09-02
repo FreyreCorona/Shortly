@@ -14,6 +14,7 @@ import (
 	db "github.com/FreyreCorona/Shortly/src/shortener_svc/internal/infrastructure/db/postgres"
 	grpcadapter "github.com/FreyreCorona/Shortly/src/shortener_svc/internal/infrastructure/grpc"
 	httpAdapter "github.com/FreyreCorona/Shortly/src/shortener_svc/internal/infrastructure/http"
+	"github.com/FreyreCorona/Shortly/src/shortener_svc/internal/infrastructure/rabbitmq"
 	"google.golang.org/grpc"
 )
 
@@ -40,9 +41,15 @@ func main() {
 		}
 	})
 
+	publisher, err := rabbitmq.NewProducerPublisher(fmt.Sprintf("%s:%s@%s:%s/",
+		os.Getenv("RABBITMQ_DEFAULT_USER"),
+		os.Getenv("RABBITMQ_DEFAULT_PASSWORD"),
+		os.Getenv("RABBITMQ_HOST"),
+		os.Getenv("RABBITMQ_PORT")))
+
 	// stablish the adapter in the service RetrieveURL
 	wg.Go(func() {
-		if err := StartHTTPHandler(repo); err != nil {
+		if err := StartHTTPHandler(repo, publisher); err != nil {
 			log.Fatalf("error on HTTP handler :%v", err)
 		}
 	})
@@ -68,8 +75,9 @@ func StartGRPCServer(repo domain.URLRepository) error {
 	return server.Serve(list)
 }
 
-func StartHTTPHandler(repo domain.URLRepository) error {
-	CreateURLService := application.NewCreateURLService(repo)
+func StartHTTPHandler(repo domain.URLRepository, publisher application.URLPublisher) error {
+	// CreateURLService := application.NewCreateURLService(repo)
+	CreateURLService := application.NewCreateURLAndPublishService(repo, publisher)
 	handler := httpAdapter.NewHandler(CreateURLService)
 
 	mux := http.NewServeMux()

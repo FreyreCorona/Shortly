@@ -8,17 +8,17 @@ import (
 	"github.com/FreyreCorona/Shortly/src/shortener_svc/internal/domain"
 )
 
-// CreateURLService use case service for generate short code by URL
-type CreateURLService struct {
+// CreateURL use case service for generate short code by URL
+type CreateURL struct {
 	repo domain.URLRepository
 }
 
-func NewCreateURLService(repo domain.URLRepository) *CreateURLService {
-	return &CreateURLService{repo: repo}
+func NewCreateURLService(repo domain.URLRepository) *CreateURL {
+	return &CreateURL{repo: repo}
 }
 
 // CreateURL calls the repository for persist the current object URL created be rawURL
-func (s CreateURLService) CreateURL(rawURL string) (domain.URL, error) {
+func (s CreateURL) CreateURL(rawURL string) (domain.URL, error) {
 	if rawURL == "" {
 		return domain.URL{}, domain.ErrRawURLEmpty
 	}
