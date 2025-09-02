@@ -10,7 +10,7 @@ import (
 type GetURLService struct {
 	cache   domain.URLCacheRepository
 	repo    domain.URLRepository
-	service *SetURL
+	service *SetURLService
 }
 
 func NewRedirectionService(cache domain.URLCacheRepository, repo domain.URLRepository) *GetURLService {
