@@ -67,6 +67,7 @@ func (c *Consumer) Listen(ctx context.Context) error {
 				if err != nil {
 					log.Printf("error unmarshalling the result :%v", err)
 					d.Nack(false, false)
+					return
 				}
 
 				u := domain.URL{RawURL: url.RawURL, ShortCode: url.ShortCode}
