@@ -1,0 +1,41 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-migrations
+spec:
+  template:
+    spec:
+      containers:
+        - name: migrate
+          image: migrate/migrate
+          args:
+            - -path=/migrations
+            - -database=postgres://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@postgres:{{ .Values.postgres.port }}/$(POSTGRES_DB)?sslmode=disable
+            - up
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-config
+            - secretRef:
+                name: {{ .Release.Name }}-secrets
+          volumeMounts:
+            - name: migration-files
+              mountPath: /migrations
+      volumes:
+        - name: migration-files
+          configMap:
+            name: {{ .Release.Name }}-migration-scripts
+      restartPolicy: OnFailure
+  backoffLimit: 4
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-migration-scripts
+data:
+  000001_create_url_table.up.sql: |
+    CREATE TABLE IF NOT EXISTS urls (
+        id SERIAL PRIMARY KEY,
+        long_url TEXT NOT NULL,
+        short_code VARCHAR(10) UNIQUE NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    );

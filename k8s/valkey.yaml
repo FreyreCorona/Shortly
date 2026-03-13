@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: valkey
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: valkey
+  template:
+    metadata:
+      labels:
+        app: valkey
+    spec:
+      containers:
+        - name: valkey
+          image: valkey/valkey
+          ports:
+            - containerPort: 6379
+          env:
+            - name: VALKEY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: VALKEY_PASSWORD
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "port 6379" > valkey.conf &&
+              echo "requirepass \"$VALKEY_PASSWORD\"" >> valkey.conf &&
+              echo "user default on allcommands allkeys >\"$VALKEY_PASSWORD\"" >> valkey.conf &&
+              exec valkey-server valkey.conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: valkey
+spec:
+  ports:
+    - port: 6379
+  selector:
+    app: valkey

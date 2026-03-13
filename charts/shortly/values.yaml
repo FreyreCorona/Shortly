@@ -1,0 +1,44 @@
+# Global Settings
+replicaCount: 1
+
+image:
+  pullPolicy: IfNotPresent
+
+# Database (Postgres)
+postgres:
+  image: postgres:17
+  port: 5432
+  db: shortly
+  user: postgres
+  password: postgres_password
+  storage: 1Gi
+
+# Cache (Valkey)
+valkey:
+  image: valkey/valkey
+  port: 6379
+  password: valkey_password
+
+# Message Queue (RabbitMQ)
+rabbitmq:
+  image: rabbitmq:4
+  port: 5672
+  user: guest
+  password: guest
+
+# Gateway (KrakenD)
+krakend:
+  image: devopsfaith/krakend
+  port: 8080
+  nodePort: 30080
+
+# Services
+shortener:
+  image: shortener_svc:latest
+  httpPort: 8080
+  grpcPort: 50051
+
+redirect:
+  image: redirect_svc:latest
+  httpPort: 8080
+  grpcPort: 50052

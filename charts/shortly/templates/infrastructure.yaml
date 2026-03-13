@@ -1,0 +1,152 @@
+# PostgreSQL
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Release.Name }}-postgres-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.postgres.storage }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: {{ .Values.postgres.image }}
+          ports:
+            - containerPort: {{ .Values.postgres.port }}
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-config
+                  key: POSTGRES_DB
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - name: postgres-storage
+              mountPath: /var/lib/postgresql/data
+      volumes:
+        - name: postgres-storage
+          persistentVolumeClaim:
+            claimName: {{ .Release.Name }}-postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  ports:
+    - port: {{ .Values.postgres.port }}
+  selector:
+    app: postgres
+
+---
+# Valkey (Cache)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: valkey
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: valkey
+  template:
+    metadata:
+      labels:
+        app: valkey
+    spec:
+      containers:
+        - name: valkey
+          image: {{ .Values.valkey.image }}
+          ports:
+            - containerPort: {{ .Values.valkey.port }}
+          env:
+            - name: VALKEY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: VALKEY_PASSWORD
+          command: ["sh", "-c"]
+          args:
+            - |
+              echo "port {{ .Values.valkey.port }}" > valkey.conf &&
+              echo "requirepass \"$VALKEY_PASSWORD\"" >> valkey.conf &&
+              echo "user default on allcommands allkeys >\"$VALKEY_PASSWORD\"" >> valkey.conf &&
+              exec valkey-server valkey.conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: valkey
+spec:
+  ports:
+    - port: {{ .Values.valkey.port }}
+  selector:
+    app: valkey
+
+---
+# RabbitMQ
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+    spec:
+      containers:
+        - name: rabbitmq
+          image: {{ .Values.rabbitmq.image }}
+          ports:
+            - containerPort: {{ .Values.rabbitmq.port }}
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: RABBITMQ_DEFAULT_USER
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: RABBITMQ_DEFAULT_PASS
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq
+spec:
+  ports:
+    - port: {{ .Values.rabbitmq.port }}
+  selector:
+    app: rabbitmq

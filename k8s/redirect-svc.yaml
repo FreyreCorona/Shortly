@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redirect-svc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redirect-svc
+  template:
+    metadata:
+      labels:
+        app: redirect-svc
+    spec:
+      containers:
+        - name: redirect-svc
+          image: redirect_svc:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+            - containerPort: 50052
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: app-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redirect-svc
+spec:
+  ports:
+    - name: http
+      port: 8080
+    - name: grpc
+      port: 50052
+  selector:
+    app: redirect-svc

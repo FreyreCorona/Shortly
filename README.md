@@ -37,9 +37,11 @@ The project implements a decoupled architecture with the following components:
 
 ### Prerequisites
 - Go 1.25+
-- Podman or Docker with Compose.
+- Docker / Podman.
+- **Minikube** (for Kubernetes deployment).
+- **kubectl** (Kubernetes CLI).
 
-### Installation
+### Installation (Docker Compose)
 1. Clone the repository.
 2. Configure environment variables:
    ```bash
@@ -49,7 +51,58 @@ The project implements a decoupled architecture with the following components:
    ```bash
    make up
    ```
-   *This command will automatically run database migrations and start all containers.*
+
+### ☸️ Kubernetes Deployment (Minikube)
+For a production-like local environment, you can deploy the entire stack to Kubernetes:
+
+1. **Start Minikube:**
+   ```bash
+   minikube start
+   ```
+
+2. **Build images directly in Minikube's Docker daemon:**
+   ```bash
+   eval $(minikube docker-env)
+   docker build -t shortener_svc:latest ./src/shortener_svc
+   docker build -t redirect_svc:latest ./src/redirect_svc
+   ```
+
+3. **Deploy all manifests:**
+   ```bash
+   kubectl apply -f k8s/
+   ```
+
+4. **Access the Gateway:**
+   ```bash
+   # Get the URL for the KrakenD service
+   minikube service krakend --url
+   ```
+   *The gateway is exposed on NodePort 30080 by default.*
+
+### 📦 Helm Deployment (Automated)
+The most professional way to deploy this project is using **Helm**. It allows you to manage the entire stack as a single package.
+
+1. **Install the Chart:**
+   ```bash
+   helm install shortly ./charts/shortly
+   ```
+
+2. **Verify the installation:**
+   ```bash
+   helm list
+   kubectl get pods
+   ```
+
+3. **Upgrade configuration (optional):**
+   If you change something in `values.yaml`, simply run:
+   ```bash
+   helm upgrade shortly ./charts/shortly
+   ```
+
+4. **Uninstall:**
+   ```bash
+   helm uninstall shortly
+   ```
 
 ---
 

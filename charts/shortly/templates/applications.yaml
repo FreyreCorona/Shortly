@@ -1,0 +1,160 @@
+# Shortener Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shortener-svc
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: shortener-svc
+  template:
+    metadata:
+      labels:
+        app: shortener-svc
+    spec:
+      containers:
+        - name: shortener-svc
+          image: {{ .Values.shortener.image }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.shortener.httpPort }}
+            - containerPort: {{ .Values.shortener.grpcPort }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-config
+            - secretRef:
+                name: {{ .Release.Name }}-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shortener-svc
+spec:
+  ports:
+    - name: http
+      port: {{ .Values.shortener.httpPort }}
+    - name: grpc
+      port: {{ .Values.shortener.grpcPort }}
+  selector:
+    app: shortener-svc
+
+---
+# Redirect Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redirect-svc
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: redirect-svc
+  template:
+    metadata:
+      labels:
+        app: redirect-svc
+    spec:
+      containers:
+        - name: redirect-svc
+          image: {{ .Values.redirect.image }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.redirect.httpPort }}
+            - containerPort: {{ .Values.redirect.grpcPort }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-config
+            - secretRef:
+                name: {{ .Release.Name }}-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redirect-svc
+spec:
+  ports:
+    - name: http
+      port: {{ .Values.redirect.httpPort }}
+    - name: grpc
+      port: {{ .Values.redirect.grpcPort }}
+  selector:
+    app: redirect-svc
+
+---
+# KrakenD (Gateway)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-krakend-config
+data:
+  krakend.json: |
+    {
+      "version": 3,
+      "name": "krakend",
+      "port": {{ .Values.krakend.port }},
+      "endpoints": [
+        {
+          "endpoint": "/shortly/create",
+          "method": "POST",
+          "backend": [
+            {
+              "host": ["http://shortener-svc:{{ .Values.shortener.httpPort }}"],
+              "url_pattern": "/shortly/create"
+            }
+          ]
+        },
+        {
+          "endpoint": "/shortly/{code}",
+          "method": "GET",
+          "output_encoding": "no-op",
+          "backend": [
+            {
+              "host": ["http://redirect-svc:{{ .Values.redirect.httpPort }}"],
+              "url_pattern": "/shortly/{code}",
+              "encoding":"no-op"
+            }
+          ]
+        }
+      ]
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: krakend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: krakend
+  template:
+    metadata:
+      labels:
+        app: krakend
+    spec:
+      containers:
+        - name: krakend
+          image: {{ .Values.krakend.image }}
+          ports:
+            - containerPort: {{ .Values.krakend.port }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/krakend
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Release.Name }}-krakend-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: krakend
+spec:
+  type: NodePort
+  ports:
+    - port: {{ .Values.krakend.port }}
+      targetPort: {{ .Values.krakend.port }}
+      nodePort: {{ .Values.krakend.nodePort }}
+  selector:
+    app: krakend

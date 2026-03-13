@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: krakend-config
+data:
+  krakend.json: |
+    {
+      "version": 3,
+      "name": "krakend",
+      "port": 8080,
+      "endpoints": [
+        {
+          "endpoint": "/shortly/create",
+          "method": "POST",
+          "backend": [
+            {
+              "host": ["http://shortener-svc:8080"],
+              "url_pattern": "/shortly/create"
+            }
+          ]
+        },
+        {
+          "endpoint": "/shortly/{code}",
+          "method": "GET",
+          "output_encoding": "no-op",
+          "backend": [
+            {
+              "host": ["http://redirect-svc:8080"],
+              "url_pattern": "/shortly/{code}",
+              "encoding":"no-op"
+            }
+          ]
+        }
+      ]
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: krakend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: krakend
+  template:
+    metadata:
+      labels:
+        app: krakend
+    spec:
+      containers:
+        - name: krakend
+          image: devopsfaith/krakend
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: config
+              mountPath: /etc/krakend
+      volumes:
+        - name: config
+          configMap:
+            name: krakend-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: krakend
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      nodePort: 30080
+  selector:
+    app: krakend
