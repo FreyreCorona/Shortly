@@ -1,12 +1,16 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"os"
+	"os/signal"
 	"sync"
+	"syscall"
+	"time"
 
 	"github.com/FreyreCorona/Shortly/protos"
 	"github.com/FreyreCorona/Shortly/src/shortener_svc/internal/application"
@@ -32,15 +36,6 @@ func main() {
 		log.Fatalf("database connection error :%s", err.Error())
 	}
 
-	var wg sync.WaitGroup
-
-	// stablish the adapter in the service CreateURL
-	wg.Go(func() {
-		if err := StartGRPCServer(repo); err != nil {
-			log.Fatalf("error on GRPC server :%v", err)
-		}
-	})
-
 	publisher, err := rabbitmq.NewProducerPublisher(fmt.Sprintf("amqp://%s:%s@%s:%s/",
 		os.Getenv("RABBITMQ_DEFAULT_USER"),
 		os.Getenv("RABBITMQ_DEFAULT_PASS"),
@@ -50,17 +45,32 @@ func main() {
 		log.Fatalf("error on rabbitmq producer :%v", err)
 	}
 
-	// stablish the adapter in the service RetrieveURL
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	var wg sync.WaitGroup
+
+	// stablish the adapter in the service CreateURL
 	wg.Go(func() {
-		if err := StartHTTPHandler(repo, publisher); err != nil {
-			log.Fatalf("error on HTTP handler :%v", err)
+		if err := StartGRPCServer(ctx, repo); err != nil {
+			log.Printf("error on GRPC server :%v", err)
 		}
 	})
 
+	// stablish the adapter in the service RetrieveURL
+	wg.Go(func() {
+		if err := StartHTTPHandler(ctx, repo, publisher); err != nil {
+			log.Printf("error on HTTP handler :%v", err)
+		}
+	})
+
+	<-ctx.Done()
+	log.Println("Shutting down gracefully...")
 	wg.Wait()
+	log.Println("Server stopped")
 }
 
-func StartGRPCServer(repo domain.URLRepository) error {
+func StartGRPCServer(ctx context.Context, repo domain.URLRepository) error {
 	RetrieveURLService := application.NewRetrieveURLService(repo)
 	gRPCHandler := grpcadapter.NewGRPCServer(*RetrieveURLService)
 
@@ -75,11 +85,17 @@ func StartGRPCServer(repo domain.URLRepository) error {
 	}
 
 	log.Printf("gRPC server running on %s", port)
+
+	go func() {
+		<-ctx.Done()
+		log.Println("Stopping gRPC server...")
+		server.GracefulStop()
+	}()
+
 	return server.Serve(list)
 }
 
-func StartHTTPHandler(repo domain.URLRepository, publisher application.URLPublisher) error {
-	// CreateURLService := application.NewCreateURLService(repo)
+func StartHTTPHandler(ctx context.Context, repo domain.URLRepository, publisher application.URLPublisher) error {
 	CreateURLService := application.NewCreateURLAndPublishService(repo, publisher)
 	handler := httpAdapter.NewHandler(CreateURLService)
 
@@ -87,8 +103,25 @@ func StartHTTPHandler(repo domain.URLRepository, publisher application.URLPublis
 	handler.Routes(mux)
 
 	port := ":" + os.Getenv("URL_SHORTENER_SVC_PORT")
+	server := &http.Server{
+		Addr:    port,
+		Handler: mux,
+	}
 
 	log.Printf("HTTP handler running on %s", port)
 
-	return http.ListenAndServe(port, mux)
+	go func() {
+		<-ctx.Done()
+		log.Println("Stopping HTTP server...")
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := server.Shutdown(shutdownCtx); err != nil {
+			log.Printf("HTTP shutdown error: %v", err)
+		}
+	}()
+
+	if err := server.ListenAndServe(); err != http.ErrServerClosed {
+		return err
+	}
+	return nil
 }
