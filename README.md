@@ -147,6 +147,6 @@ The system exposes its services through the port configured in `KRAKEND_GATEWAY_
 ---
 
 ## 👨‍💻 Author
-[Your Name/FreyreCorona]
-- [LinkedIn](https://www.linkedin.com/in/your-profile)
+[FreyreCorona]
+- [LinkedIn](https://www.linkedin.com/in/einier-freyre-896981220)
 - [GitHub](https://github.com/FreyreCorona)
