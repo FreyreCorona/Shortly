@@ -1,0 +1,34 @@
+name: Deployment to AWS
+
+on:
+  workflow_run:
+    workflows: ["Quality and Testing"]
+    types:
+      - completed
+    branches: [ "master" ]
+
+jobs:
+  deploy:
+    name: Deploy to Kubernetes with Helm
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            cd ~/Shortly
+            git pull origin master
+            
+            podman build -t shortener_svc:latest ./src/shortener_svc
+            podman build -t redirect_svc:latest ./src/redirect_svc
+            
+            # Helm Deployment
+            helm upgrade --install shortly ./charts/shortly \
+              --namespace shortly-production --create-namespace \
+              --values ./charts/shortly/values.yaml
+            
+            podman image prune -f
