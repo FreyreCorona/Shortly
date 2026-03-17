@@ -9,7 +9,6 @@ linters:
     - staticcheck
     - unused
     - gosimple
-    - deadcode
     - ineffassign
     - misspell
     - revive
