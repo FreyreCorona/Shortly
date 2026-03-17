@@ -2,6 +2,7 @@ version: "2"
 run:
   timeout: 5m
   tests: true
+
 linters:
   enable:
     - govet
@@ -13,23 +14,23 @@ linters:
     - misspell
     - revive
     - gofumpt
+  settings:
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
+    revive:
+      severity: warning
+      rules:
+        - name: var-naming
+          arguments:
+            - ["ID", "URL", "HTTP"]
+        - name: indent-error-flow
+        - name: package-comments
 
-linters-settings:
-  errcheck:
-    check-type-assertions: true
-    check-blank: true
-
-  revive:
-    severity: warning
-    rules:
-      - name: var-naming
-        arguments:
-          - ["ID", "URL", "HTTP"]
-      - name: indent-error-flow
-      - name: package-comments
-
-  gofumpt:
-    extra-rules: true
+formatters:
+  settings:
+    gofumpt:
+      extra-rules: true
 
 issues:
   max-same-issues: 3
