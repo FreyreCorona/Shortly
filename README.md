@@ -4,6 +4,8 @@
 
 ## 🏗️ System Architecture
 
+<img src="docs/architecture.svg" alt="Shortly System Architecture Diagram" width="100%">
+
 The project implements a decoupled architecture with the following components:
 
 - **KrakenD (API Gateway):** A single entry point that manages routing, rate limiting, and service aggregation.
@@ -12,6 +14,7 @@ The project implements a decoupled architecture with the following components:
 - **RabbitMQ:** Message broker for asynchronous communication and event propagation (pre-populating cache upon URL creation).
 - **Valkey (Cache):** High-performance in-memory storage to minimize redirection latency.
 - **PostgreSQL:** Source of truth for long-term data persistence.
+- **Prometheus &amp; Grafana:** Observability stack for metrics collection, custom business dashboards (cache hit ratio, creation throughput, redirect rate), and Go runtime telemetry.
 
 ### Data Flow
 
@@ -28,6 +31,7 @@ The project implements a decoupled architecture with the following components:
 - **Messaging:** RabbitMQ 4 (Event-Driven Architecture).
 - **Databases:** PostgreSQL 17 & Valkey (Redis-compatible).
 - **API Gateway:** KrakenD.
+- **Observability:** Prometheus &amp; Grafana.
 - **Infrastructure:** Podman Compose / Docker Compose.
 - **Design Patterns:** Clean Architecture, Repository Pattern, Cache-aside, Pub/Sub.
 
