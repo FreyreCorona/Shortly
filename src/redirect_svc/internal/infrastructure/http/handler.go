@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/FreyreCorona/Shortly/src/redirect_svc/internal/application"
+	"github.com/FreyreCorona/Shortly/src/redirect_svc/internal/infrastructure/metrics"
 )
 
 type Handler struct {
@@ -29,10 +30,12 @@ func (h *Handler) redirect(w http.ResponseWriter, r *http.Request) {
 	}
 	url, err := h.service.GetURL(short)
 	if err != nil {
+		metrics.RedirectsTotal.WithLabelValues("not_found").Inc()
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		log.Printf("error retrieving url %s", err.Error())
 		return
 	}
 
+	metrics.RedirectsTotal.WithLabelValues("found").Inc()
 	http.Redirect(w, r, url.RawURL, http.StatusFound)
 }

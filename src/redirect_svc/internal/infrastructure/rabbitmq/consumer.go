@@ -8,6 +8,7 @@ import (
 
 	"github.com/FreyreCorona/Shortly/src/redirect_svc/internal/application"
 	"github.com/FreyreCorona/Shortly/src/redirect_svc/internal/domain"
+	"github.com/FreyreCorona/Shortly/src/redirect_svc/internal/infrastructure/metrics"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -76,6 +77,7 @@ func (c *Consumer) Listen(ctx context.Context) error {
 					log.Printf("error caching the url :%v", err)
 				}
 
+				metrics.RabbitMQConsumedTotal.Inc()
 				d.Ack(false)
 			case <-ctx.Done():
 				log.Println("Stoping consumer")

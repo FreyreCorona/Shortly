@@ -4,9 +4,11 @@ package valkey
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"time"
 
 	"github.com/FreyreCorona/Shortly/src/redirect_svc/internal/domain"
+	"github.com/FreyreCorona/Shortly/src/redirect_svc/internal/infrastructure/metrics"
 	"github.com/valkey-io/valkey-go"
 )
 
@@ -43,8 +45,13 @@ func (c *ValkeyCachedURLRepository) Get(code string) (*domain.URL, error) {
 
 	data, err := c.Client.Do(ctx, c.Client.B().Get().Key(code).Build()).ToString()
 	if err != nil {
+		if errors.Is(err, domain.ErrNoCachedURL) {
+			metrics.CacheMissesTotal.Inc()
+		}
 		return nil, domain.ErrNoCachedURL
 	}
+	metrics.CacheHitsTotal.Inc()
+
 	var url domain.URL
 	err = json.Unmarshal([]byte(data), &url)
 	if err != nil {
