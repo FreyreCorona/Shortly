@@ -1,4 +1,3 @@
-// Package rabbitmq used to enqueue messages
 package rabbitmq
 
 import (
@@ -7,6 +6,7 @@ import (
 	"time"
 
 	"github.com/FreyreCorona/Shortly/src/shortener_svc/internal/domain"
+	"github.com/FreyreCorona/Shortly/src/shortener_svc/internal/infrastructure/metrics"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
@@ -52,5 +52,6 @@ func (p *ProducerPublisher) Publish(url domain.URL) error {
 		return err
 	}
 
+	metrics.RabbitMQPublishedTotal.Inc()
 	return nil
 }

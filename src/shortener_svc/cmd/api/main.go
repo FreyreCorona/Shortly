@@ -18,6 +18,7 @@ import (
 	db "github.com/FreyreCorona/Shortly/src/shortener_svc/internal/infrastructure/db/postgres"
 	grpcadapter "github.com/FreyreCorona/Shortly/src/shortener_svc/internal/infrastructure/grpc"
 	httpAdapter "github.com/FreyreCorona/Shortly/src/shortener_svc/internal/infrastructure/http"
+	"github.com/FreyreCorona/Shortly/src/shortener_svc/internal/infrastructure/metrics"
 	"github.com/FreyreCorona/Shortly/src/shortener_svc/internal/infrastructure/rabbitmq"
 	"google.golang.org/grpc"
 )
@@ -64,6 +65,13 @@ func main() {
 		}
 	})
 
+	// metrics server for Prometheus scraping
+	wg.Go(func() {
+		if err := StartMetricsServer(ctx); err != nil {
+			log.Printf("error on metrics server :%v", err)
+		}
+	})
+
 	<-ctx.Done()
 	log.Println("Shutting down gracefully...")
 	wg.Wait()
@@ -102,10 +110,12 @@ func StartHTTPHandler(ctx context.Context, repo domain.URLRepository, publisher 
 	mux := http.NewServeMux()
 	handler.Routes(mux)
 
+	wrappedHandler := metrics.MetricsMiddleware(mux)
+
 	port := ":" + os.Getenv("URL_SHORTENER_SVC_PORT")
 	server := &http.Server{
 		Addr:    port,
-		Handler: mux,
+		Handler: wrappedHandler,
 	}
 
 	log.Printf("HTTP handler running on %s", port)
@@ -117,6 +127,39 @@ func StartHTTPHandler(ctx context.Context, repo domain.URLRepository, publisher 
 		defer cancel()
 		if err := server.Shutdown(shutdownCtx); err != nil {
 			log.Printf("HTTP shutdown error: %v", err)
+		}
+	}()
+
+	if err := server.ListenAndServe(); err != http.ErrServerClosed {
+		return err
+	}
+	return nil
+}
+
+func StartMetricsServer(ctx context.Context) error {
+	mux := http.NewServeMux()
+	mux.Handle("/metrics", metrics.Handler())
+
+	port := os.Getenv("METRICS_PORT")
+	if port == "" {
+		port = "9090"
+	}
+	port = ":" + port
+
+	server := &http.Server{
+		Addr:    port,
+		Handler: mux,
+	}
+
+	log.Printf("Metrics server running on %s", port)
+
+	go func() {
+		<-ctx.Done()
+		log.Println("Stopping metrics server...")
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		if err := server.Shutdown(shutdownCtx); err != nil {
+			log.Printf("Metrics shutdown error: %v", err)
 		}
 	}()
 

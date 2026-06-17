@@ -1,4 +1,3 @@
-// Package http is the input adapter for the users entries
 package http
 
 import (
@@ -7,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/FreyreCorona/Shortly/src/shortener_svc/internal/application"
+	"github.com/FreyreCorona/Shortly/src/shortener_svc/internal/infrastructure/metrics"
 )
 
 type Handler struct {
@@ -49,5 +49,8 @@ func (h *Handler) createURL(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		log.Printf("error sending a response :%s", err.Error())
+		return
 	}
+
+	metrics.URLCreationsTotal.Inc()
 }
