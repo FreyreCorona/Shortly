@@ -1,0 +1,117 @@
+{
+  "dashboard": {
+    "title": "Shortly Overview",
+    "tags": ["shortly", "go", "prometheus"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "title": "Go Memory Usage",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "go_memstats_alloc_bytes{job=~\"shortener-svc|redirect-svc\"}",
+            "legendFormat": "{{job}} alloc"
+          }
+        ]
+      },
+      {
+        "title": "Goroutines",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "go_goroutines{job=~\"shortener-svc|redirect-svc\"}",
+            "legendFormat": "{{job}}"
+          }
+        ]
+      },
+      {
+        "title": "HTTP Request Rate",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total[1m])",
+            "legendFormat": "{{job}} {{method}} {{pattern}}"
+          }
+        ]
+      },
+      {
+        "title": "HTTP Latency (p99)",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[1m]))",
+            "legendFormat": "{{job}} {{method}} {{pattern}}"
+          }
+        ]
+      },
+      {
+        "title": "HTTP Status Codes",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "rate(http_requests_total[1m])",
+            "legendFormat": "{{job}} {{status}}"
+          }
+        ]
+      },
+      {
+        "title": "URL Creations",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "rate(shortly_url_creations_total[1m])",
+            "legendFormat": "rate"
+          }
+        ]
+      },
+      {
+        "title": "Redirects",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "rate(shortly_redirects_total[1m])",
+            "legendFormat": "{{status}}"
+          }
+        ]
+      },
+      {
+        "title": "Cache Hit / Miss Ratio",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "rate(shortly_cache_hits_total[1m])",
+            "legendFormat": "hits"
+          },
+          {
+            "expr": "rate(shortly_cache_misses_total[1m])",
+            "legendFormat": "misses"
+          }
+        ]
+      },
+      {
+        "title": "RabbitMQ Events",
+        "type": "graph",
+        "datasource": "Prometheus",
+        "targets": [
+          {
+            "expr": "rate(shortly_rabbitmq_published_total[1m])",
+            "legendFormat": "published"
+          },
+          {
+            "expr": "rate(shortly_rabbitmq_consumed_total[1m])",
+            "legendFormat": "consumed"
+          }
+        ]
+      }
+    ],
+    "schemaVersion": 27
+  }
+}
