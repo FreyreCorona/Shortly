@@ -129,6 +129,8 @@ spec:
           image: {{ .Values.rabbitmq.image }}
           ports:
             - containerPort: {{ .Values.rabbitmq.port }}
+            - containerPort: {{ .Values.rabbitmq.managementPort }}
+            - containerPort: {{ .Values.rabbitmq.prometheusPort }}
           env:
             - name: RABBITMQ_DEFAULT_USER
               valueFrom:
@@ -148,5 +150,188 @@ metadata:
 spec:
   ports:
     - port: {{ .Values.rabbitmq.port }}
+      name: amqp
+    - port: {{ .Values.rabbitmq.managementPort }}
+      name: management
+    - port: {{ .Values.rabbitmq.prometheusPort }}
+      name: prometheus
   selector:
     app: rabbitmq
+
+---
+# PostgreSQL Exporter
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres-exporter
+  template:
+    metadata:
+      labels:
+        app: postgres-exporter
+    spec:
+      containers:
+        - name: postgres-exporter
+          image: {{ .Values.postgresExporter.image }}
+          ports:
+            - containerPort: {{ .Values.postgresExporter.port }}
+          env:
+            - name: DATA_SOURCE_NAME
+              value: "postgresql://{{ .Values.postgres.user }}:{{ .Values.postgres.password }}@postgres:{{ .Values.postgres.port }}/{{ .Values.postgres.db }}?sslmode=disable"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-exporter
+spec:
+  ports:
+    - port: {{ .Values.postgresExporter.port }}
+  selector:
+    app: postgres-exporter
+
+---
+# Valkey Exporter
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-exporter
+  template:
+    metadata:
+      labels:
+        app: redis-exporter
+    spec:
+      containers:
+        - name: redis-exporter
+          image: {{ .Values.redisExporter.image }}
+          ports:
+            - containerPort: {{ .Values.redisExporter.port }}
+          env:
+            - name: REDIS_ADDR
+              value: "valkey:{{ .Values.valkey.port }}"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: VALKEY_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-exporter
+spec:
+  ports:
+    - port: {{ .Values.redisExporter.port }}
+  selector:
+    app: redis-exporter
+
+---
+# Prometheus
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-prometheus-config
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval:     15s
+      evaluation_interval: 15s
+
+    scrape_configs:
+      - job_name: 'shortener-svc'
+        static_configs:
+          - targets: ['shortener-svc:{{ .Values.shortener.metricsPort }}']
+
+      - job_name: 'redirect-svc'
+        static_configs:
+          - targets: ['redirect-svc:{{ .Values.redirect.metricsPort }}']
+
+      - job_name: 'postgres-exporter'
+        static_configs:
+          - targets: ['postgres-exporter:{{ .Values.postgresExporter.port }}']
+
+      - job_name: 'valkey-exporter'
+        static_configs:
+          - targets: ['redis-exporter:{{ .Values.redisExporter.port }}']
+
+      - job_name: 'rabbitmq'
+        metrics_path: '/metrics'
+        static_configs:
+          - targets: ['rabbitmq:{{ .Values.rabbitmq.prometheusPort }}']
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      containers:
+        - name: prometheus
+          image: {{ .Values.prometheus.image }}
+          ports:
+            - containerPort: {{ .Values.prometheus.port }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/prometheus
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Release.Name }}-prometheus-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+spec:
+  ports:
+    - port: {{ .Values.prometheus.port }}
+  selector:
+    app: prometheus
+
+---
+# Grafana
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana
+          image: {{ .Values.grafana.image }}
+          ports:
+            - containerPort: {{ .Values.grafana.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+spec:
+  ports:
+    - port: {{ .Values.grafana.port }}
+  selector:
+    app: grafana

@@ -20,6 +20,8 @@ spec:
           ports:
             - containerPort: {{ .Values.shortener.httpPort }}
             - containerPort: {{ .Values.shortener.grpcPort }}
+            - containerPort: {{ .Values.shortener.metricsPort }}
+              name: metrics
           envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-config
@@ -36,6 +38,8 @@ spec:
       port: {{ .Values.shortener.httpPort }}
     - name: grpc
       port: {{ .Values.shortener.grpcPort }}
+    - name: metrics
+      port: {{ .Values.shortener.metricsPort }}
   selector:
     app: shortener-svc
 
@@ -62,6 +66,8 @@ spec:
           ports:
             - containerPort: {{ .Values.redirect.httpPort }}
             - containerPort: {{ .Values.redirect.grpcPort }}
+            - containerPort: {{ .Values.redirect.metricsPort }}
+              name: metrics
           envFrom:
             - configMapRef:
                 name: {{ .Release.Name }}-config
@@ -78,6 +84,8 @@ spec:
       port: {{ .Values.redirect.httpPort }}
     - name: grpc
       port: {{ .Values.redirect.grpcPort }}
+    - name: metrics
+      port: {{ .Values.redirect.metricsPort }}
   selector:
     app: redirect-svc
 

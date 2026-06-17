@@ -19,6 +19,8 @@ spec:
           ports:
             - containerPort: 8080
             - containerPort: 50051
+            - containerPort: 9090
+              name: metrics
           envFrom:
             - configMapRef:
                 name: app-config
@@ -35,5 +37,7 @@ spec:
       port: 8080
     - name: grpc
       port: 50051
+    - name: metrics
+      port: 9090
   selector:
     app: shortener-svc

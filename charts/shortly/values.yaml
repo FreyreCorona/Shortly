@@ -21,8 +21,10 @@ valkey:
 
 # Message Queue (RabbitMQ)
 rabbitmq:
-  image: rabbitmq:4
+  image: rabbitmq:4-management
   port: 5672
+  managementPort: 15672
+  prometheusPort: 15692
   user: guest
   password: guest
 
@@ -37,8 +39,28 @@ shortener:
   image: shortener_svc:latest
   httpPort: 8080
   grpcPort: 50051
+  metricsPort: 9090
 
 redirect:
   image: redirect_svc:latest
   httpPort: 8080
   grpcPort: 50052
+  metricsPort: 9090
+
+# Monitoring
+prometheus:
+  image: prom/prometheus
+  port: 9090
+  storage: 2Gi
+
+grafana:
+  image: grafana/grafana
+  port: 3000
+
+postgresExporter:
+  image: prometheuscommunity/postgres-exporter
+  port: 9187
+
+redisExporter:
+  image: oliver006/redis_exporter
+  port: 9121
