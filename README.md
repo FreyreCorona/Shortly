@@ -4,7 +4,67 @@
 
 ## 🏗️ System Architecture
 
-<img src="docs/architecture.svg" alt="Shortly System Architecture Diagram" width="100%">
+```mermaid
+graph TB
+    subgraph Client
+        User(("👤 User"))
+    end
+
+    subgraph Gateway["API Gateway"]
+        GW[("KrakenD<br/>:8080")]
+    end
+
+    subgraph Services["Services"]
+        SS[<b>shortener_svc</b><br/>REST :8080 · gRPC :50051<br/>Metrics :9090]
+        RS[<b>redirect_svc</b><br/>REST :8080<br/>Metrics :9090]
+    end
+
+    subgraph Infrastructure["Infrastructure"]
+        PG[("PostgreSQL<br/>:5432")]
+        RMQ["RabbitMQ<br/>:5672"]
+        VK[("Valkey Cache<br/>:6379")]
+    end
+
+    subgraph Observability["Observability"]
+        PROM["Prometheus<br/>:9090"]
+        GRAF["Grafana<br/>:3000"]
+        PGE(("postgres-exporter<br/>:9187"))
+        RDE(("redis-exporter<br/>:9121"))
+    end
+
+    User -->|HTTP| GW
+
+    GW -->|POST /shortly/create| SS
+    GW -->|GET /shortly/{code}| RS
+
+    SS -->|persist| PG
+    SS -->|publish event| RMQ
+    RMQ -->|consume event| RS
+    RS -->|cache R/W| VK
+    RS -.->|gRPC fallback| SS
+
+    SS -.->|scrape /metrics| PROM
+    RS -.->|scrape /metrics| PROM
+    PG -.-> PGE
+    VK -.-> RDE
+    PGE -.->|metrics| PROM
+    RDE -.->|metrics| PROM
+    PROM -->|datasource| GRAF
+
+    classDef client fill:#E8ECF0,stroke:#5B6770,color:#1A1A2E
+    classDef gateway fill:#1A1A2E,stroke:#1A1A2E,color:#FFFFFF
+    classDef service fill:#4361EE,stroke:#3651D4,color:#FFFFFF
+    classDef infra fill:#2D6A4F,stroke:#1F4D3A,color:#FFFFFF
+    classDef obs fill:#C87941,stroke:#A86133,color:#FFFFFF
+    classDef exporter fill:none,stroke:#2D6A4F,stroke-dasharray:3 2,color:#2D6A4F
+
+    class User client
+    class GW gateway
+    class SS,RS service
+    class PG,RMQ,VK infra
+    class PROM,GRAF obs
+    class PGE,RDE exporter
+```
 
 The project implements a decoupled architecture with the following components:
 
