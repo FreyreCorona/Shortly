@@ -107,8 +107,8 @@
   <text x="385" y="440" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="rgba(255,255,255,0.65)">:5672</text>
 
   <!-- Arrow RabbitMQ → redirect_svc -->
-  <line x1="480" y1="410" x2="560" y2="410" stroke="#5B6770" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text x="507" y="398" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#5B6770">consume event</text>
+  <path d="M 480 410 L 560 410 L 560 315" stroke="#5B6770" stroke-width="1.5" fill="none" marker-end="url(#arrow)"/>
+  <text x="520" y="398" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#5B6770">consume event</text>
 
   <!-- Arrow redirect_svc → Valkey -->
   <line x1="775" y1="315" x2="785" y2="385" stroke="#5B6770" stroke-width="1.5" marker-end="url(#arrow)"/>
@@ -127,10 +127,10 @@
   <!-- Arrow shortener_svc → Prometheus -->
   <line x1="215" y1="315" x2="215" y2="545" stroke="#C87941" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow-orange)"/>
 
-  <!-- Arrow redirect_svc → Prometheus -->
-  <line x1="705" y1="315" x2="705" y2="545" stroke="#C87941" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow-orange)"/>
+  <!-- Arrow redirect_svc → Prometheus (staircase: down → left → down) -->
+  <path d="M 705 315 L 705 480 L 215 480 L 215 545" stroke="#C87941" stroke-width="1.5" stroke-dasharray="5,3" fill="none" marker-end="url(#arrow-orange)"/>
 
-  <text x="460" y="537" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#C87941">scrape /metrics</text>
+  <text x="460" y="473" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#C87941">scrape /metrics</text>
 
   <!-- Prometheus -->
   <rect x="105" y="550" width="220" height="65" rx="8" fill="url(#mon-grad)" filter="url(#shadow)"/>
