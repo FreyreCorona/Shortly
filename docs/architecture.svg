@@ -51,7 +51,7 @@
 
   <!-- Arrow User → KrakenD -->
   <line x1="460" y1="95" x2="460" y2="120" stroke="#5B6770" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text x="470" y="110" font-family="'Segoe UI', Arial, sans-serif" font-size="9" fill="#5B6770">HTTP</text>
+  <text x="470" y="110" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#5B6770">HTTP</text>
 
   <!-- KrakenD Gateway -->
   <rect x="310" y="120" width="300" height="55" rx="8" fill="url(#gateway-grad)" filter="url(#shadow)"/>
@@ -62,35 +62,35 @@
 
   <!-- Arrow KrakenD → shortener_svc -->
   <line x1="395" y1="175" x2="225" y2="215" stroke="#5B6770" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text x="275" y="197" font-family="'Segoe UI', Arial, sans-serif" font-size="9" fill="#5B6770">POST /shortly/create</text>
+  <text x="275" y="197" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#5B6770">POST /shortly/create</text>
 
   <!-- Arrow KrakenD → redirect_svc -->
   <line x1="525" y1="175" x2="695" y2="215" stroke="#5B6770" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text x="605" y="197" font-family="'Segoe UI', Arial, sans-serif" font-size="9" fill="#5B6770">GET /shortly/{code}</text>
+  <text x="605" y="197" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#5B6770">GET /shortly/{code}</text>
 
   <!-- shortener_svc -->
   <rect x="70" y="215" width="290" height="100" rx="8" fill="url(#svc-grad)" filter="url(#shadow)"/>
   <text x="215" y="240" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF">shortener_svc</text>
   <text x="215" y="265" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="rgba(255,255,255,0.75)">REST :8080 &amp;nbsp; · &amp;nbsp; gRPC :50051</text>
   <text x="215" y="285" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="rgba(255,255,255,0.55)">Metrics :9090</text>
-  <text x="215" y="302" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="9" fill="rgba(255,255,255,0.4)">Create URL &amp; Publish Event</text>
+  <text x="215" y="302" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="rgba(255,255,255,0.4)">Create URL &amp; Publish Event</text>
 
   <!-- redirect_svc -->
   <rect x="560" y="215" width="290" height="100" rx="8" fill="url(#svc-grad)" filter="url(#shadow)"/>
   <text x="705" y="240" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="14" font-weight="600" fill="#FFFFFF">redirect_svc</text>
   <text x="705" y="265" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="rgba(255,255,255,0.75)">REST :8080</text>
   <text x="705" y="285" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="10" fill="rgba(255,255,255,0.55)">Metrics :9090</text>
-  <text x="705" y="302" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="9" fill="rgba(255,255,255,0.4)">Cache-aside &amp; Redirect</text>
+  <text x="705" y="302" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="rgba(255,255,255,0.4)">Cache-aside &amp; Redirect</text>
 
   <!-- gRPC fallback arrow: redirect_svc → shortener_svc -->
   <line x1="560" y1="250" x2="360" y2="250" stroke="#4361EE" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow-blue)"/>
-  <text x="440" y="244" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="9" fill="#4361EE">gRPC fallback</text>
+  <text x="440" y="244" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#4361EE">gRPC fallback</text>
 
   <!-- ======================= ROW 3: INFRASTRUCTURE ======================= -->
 
   <!-- Arrow shortener_svc → PostgreSQL -->
   <line x1="150" y1="315" x2="120" y2="385" stroke="#5B6770" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text x="118" y="355" font-family="'Segoe UI', Arial, sans-serif" font-size="9" fill="#5B6770">persist</text>
+  <text x="118" y="355" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#5B6770">persist</text>
 
   <!-- PostgreSQL -->
   <rect x="50" y="388" width="190" height="70" rx="8" fill="url(#db-grad)" filter="url(#shadow)"/>
@@ -99,7 +99,7 @@
 
   <!-- Arrow shortener_svc → RabbitMQ -->
   <line x1="215" y1="315" x2="305" y2="385" stroke="#5B6770" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text x="237" y="355" font-family="'Segoe UI', Arial, sans-serif" font-size="9" fill="#5B6770">publish event</text>
+  <text x="237" y="355" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#5B6770">publish event</text>
 
   <!-- RabbitMQ -->
   <rect x="290" y="388" width="190" height="70" rx="8" fill="url(#queue-grad)" filter="url(#shadow)"/>
@@ -108,11 +108,11 @@
 
   <!-- Arrow RabbitMQ → redirect_svc -->
   <line x1="480" y1="410" x2="560" y2="410" stroke="#5B6770" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text x="507" y="403" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="9" fill="#5B6770">consume event</text>
+  <text x="507" y="398" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#5B6770">consume event</text>
 
   <!-- Arrow redirect_svc → Valkey -->
   <line x1="775" y1="315" x2="785" y2="385" stroke="#5B6770" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text x="790" y="355" font-family="'Segoe UI', Arial, sans-serif" font-size="9" fill="#5B6770">cache R/W</text>
+  <text x="790" y="355" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#5B6770">cache R/W</text>
 
   <!-- Valkey -->
   <rect x="680" y="388" width="190" height="70" rx="8" fill="url(#db-grad)" filter="url(#shadow)"/>
@@ -130,7 +130,7 @@
   <!-- Arrow redirect_svc → Prometheus -->
   <line x1="705" y1="315" x2="705" y2="545" stroke="#C87941" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrow-orange)"/>
 
-  <text x="460" y="540" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="9" fill="#C87941">scrape /metrics</text>
+  <text x="460" y="537" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#C87941">scrape /metrics</text>
 
   <!-- Prometheus -->
   <rect x="105" y="550" width="220" height="65" rx="8" fill="url(#mon-grad)" filter="url(#shadow)"/>
@@ -139,7 +139,7 @@
 
   <!-- Arrow Prometheus → Grafana -->
   <line x1="325" y1="582" x2="415" y2="582" stroke="#5B6770" stroke-width="1.5" marker-end="url(#arrow)"/>
-  <text x="370" y="575" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="9" fill="#5B6770">datasource</text>
+  <text x="370" y="571" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#5B6770">datasource</text>
 
   <!-- Grafana -->
   <rect x="415" y="550" width="220" height="65" rx="8" fill="url(#mon-grad)" filter="url(#shadow)"/>
@@ -148,18 +148,18 @@
 
   <!-- Postgres Exporter → Prometheus -->
   <ellipse cx="100" cy="480" rx="50" ry="18" fill="none" stroke="#2D6A4F" stroke-width="1.5" stroke-dasharray="3,2"/>
-  <text x="100" y="484" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="8" fill="#2D6A4F">postgres-exporter</text>
+  <text x="100" y="484" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#2D6A4F">postgres-exporter</text>
 
   <!-- Redis Exporter → Prometheus -->
   <ellipse cx="820" cy="480" rx="50" ry="18" fill="none" stroke="#2D6A4F" stroke-width="1.5" stroke-dasharray="3,2"/>
-  <text x="820" y="484" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="8" fill="#2D6A4F">redis-exporter</text>
+  <text x="820" y="484" text-anchor="middle" font-family="'Segoe UI', Arial, sans-serif" font-size="11" fill="#2D6A4F">redis-exporter</text>
 
   <!-- Legend -->
   <rect x="680" y="640" width="200" height="65" rx="6" fill="#FFFFFF" stroke="#D0D5DD" stroke-width="1" filter="url(#shadow)"/>
-  <text x="690" y="658" font-family="'Segoe UI', Arial, sans-serif" font-size="9" font-weight="700" fill="#1A1A2E">Legend</text>
+  <text x="690" y="658" font-family="'Segoe UI', Arial, sans-serif" font-size="12" font-weight="700" fill="#1A1A2E">Legend</text>
   <line x1="690" y1="672" x2="720" y2="672" stroke="#5B6770" stroke-width="2" marker-end="url(#arrow)"/>
-  <text x="725" y="675" font-family="'Segoe UI', Arial, sans-serif" font-size="9" fill="#5B6770">Synchronous</text>
+  <text x="725" y="675" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#5B6770">Synchronous</text>
   <line x1="690" y1="688" x2="720" y2="688" stroke="#C87941" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow-orange)"/>
-  <text x="725" y="691" font-family="'Segoe UI', Arial, sans-serif" font-size="9" fill="#5B6770">Metrics scraping</text>
+  <text x="725" y="691" font-family="'Segoe UI', Arial, sans-serif" font-size="12" fill="#5B6770">Metrics scraping</text>
 
 </svg>
