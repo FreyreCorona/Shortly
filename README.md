@@ -35,7 +35,7 @@ graph TB
     User -->|HTTP| GW
 
     GW -->|POST /shortly/create| SS
-    GW -->|GET /shortly/{code}| RS
+    GW -->|"GET /shortly/{code}"| RS
 
     SS -->|persist| PG
     SS -->|publish event| RMQ
