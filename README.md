@@ -1,6 +1,11 @@
 # Shortly: Event-Driven URL Shortener Microservices
 
-**Shortly** is a portfolio project designed to showcase a robust, scalable, and event-driven microservices architecture built with **Go**. The system enables shortening long URLs and performing high-speed redirections through distributed caching and efficient inter-service communication.
+**Shortly** is a portfolio project designed to showcase a robust, scalable, and **cloud-agnostic** event-driven microservices architecture built with **Go**. The system enables shortening long URLs and performing high-speed redirections through distributed caching and efficient inter-service communication.
+
+> 🔬 **Highlights for your CV:**
+> - **Portable by design**: the same Helm chart + containers run on **Oracle Cloud, AWS (EKS), GCP (GKE) or Azure (AKS)**.
+> - **Cloud-native AWS**: when deployed to AWS, infrastructure is delegated to managed services (**RDS**, **ElastiCache**, **Amazon MQ**, **EKS**) provisioned with **Terraform** and deployed via **GitHub Actions with OIDC**.
+> - **DevOps/Platform**: IaC, CI/CD, clean architecture, event-driven Go microservices, observability.
 
 ## 🏗️ System Architecture
 
@@ -92,7 +97,9 @@ The project implements a decoupled architecture with the following components:
 - **Databases:** PostgreSQL 17 & Valkey (Redis-compatible).
 - **API Gateway:** KrakenD.
 - **Observability:** Prometheus &amp; Grafana.
-- **Infrastructure:** Podman Compose / Docker Compose.
+- **Infrastructure:** Kubernetes (manifests + Helm chart), ready for **EKS / GKE / AKS / Oracle**.
+- **Cloud (AWS):** Amazon EKS, RDS PostgreSQL, ElastiCache Redis, Amazon MQ RabbitMQ, ECR.
+- **IaC & CI/CD:** Terraform, GitHub Actions (OIDC).
 - **Design Patterns:** Clean Architecture, Repository Pattern, Cache-aside, Pub/Sub.
 
 ---
@@ -101,20 +108,12 @@ The project implements a decoupled architecture with the following components:
 
 ### Prerequisites
 - Go 1.25+
-- Docker / Podman.
+- **Docker** (to build images).
 - **Minikube** (for Kubernetes deployment).
 - **kubectl** (Kubernetes CLI).
+- **Helm** (package manager for Kubernetes).
 
-### Installation (Docker Compose)
-1. Clone the repository.
-2. Configure environment variables:
-   ```bash
-   cp .env.example .env
-   ```
-3. Start the infrastructure and services:
-   ```bash
-   make up
-   ```
+> Configuration (endpoints, ports, credentials) is managed entirely by Kubernetes via **ConfigMaps** and **Secrets** — there is no `.env` file involved.
 
 ### ☸️ Kubernetes Deployment (Minikube)
 For a production-like local environment, you can deploy the entire stack to Kubernetes:
@@ -170,9 +169,38 @@ The most professional way to deploy this project is using **Helm**. It allows yo
 
 ---
 
+### ☁️ Amazon Web Services (EKS + Managed Services)
+
+The project is **cloud-agnostic**, but when deployed to AWS it takes full advantage of managed services. This is the recommended path to showcase AWS/native cloud knowledge.
+
+```
+User → ALB → KrakenD (EKS) → shortener_svc (EKS) ──► Amazon RDS PostgreSQL
+                             redirect_svc (EKS) ──► ElastiCache Redis · Amazon MQ RabbitMQ
+```
+
+| Component      | In AWS it runs on         | Why it matters                          |
+|----------------|---------------------------|-----------------------------------------|
+| Microservices  | **Amazon EKS** (Helm)     | Same chart as Oracle/GKE/AKS → portable |
+| Gateway (KrakenD) | EKS + ALB Ingress      | Managed TLS (ACM) + DNS (Route53)       |
+| PostgreSQL     | **Amazon RDS**            | Backups, Multi-AZ, PITR                  |
+| Valkey cache   | **ElastiCache Redis**     | Valkey = Redis fork → compatible client |
+| RabbitMQ       | **Amazon MQ for RabbitMQ**| Managed AMQP broker                      |
+| Images         | **Amazon ECR**            | Private registry                         |
+| CI/CD          | **GitHub Actions + OIDC** | No exposed AWS keys                      |
+| IaC            | **Terraform**             | VPC, EKS, RDS, ElastiCache, MQ, IAM      |
+
+📄 **Full migration guide:** [`docs/migrate-to-aws.md`](docs/migrate-to-aws.md)
+
+**Key advantages:**
+- **Portability:** no vendor lock-in. The same containers/Helm run anywhere Kubernetes exists.
+- **Managed data plane:** no need to self-host Postgres/Valkey/RabbitMQ pods and their storage.
+- **Security:** GitHub OIDC federation, restricted Security Groups, secrets from AWS Secrets Manager/SSM.
+
+---
+
 ## 📖 API Documentation
 
-The system exposes its services through the port configured in `KRAKEND_GATEWAY_PORT` (default is `8080`).
+The system exposes its services through the `krakend` service (NodePort `30080` locally; ALB Ingress in the AWS deployment).
 
 ### 1. Create a Short URL
 **Endpoint:** `POST /shortly/create`
