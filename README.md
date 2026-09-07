@@ -189,7 +189,6 @@ User → ALB → KrakenD (EKS) → shortener_svc (EKS) ──► Amazon RDS Post
 | CI/CD          | **GitHub Actions + OIDC** | No exposed AWS keys                      |
 | IaC            | **Terraform**             | VPC, EKS, RDS, ElastiCache, MQ, IAM      |
 
-📄 **Full migration guide:** [`docs/migrate-to-aws.md`](docs/migrate-to-aws.md)
 
 **Key advantages:**
 - **Portability:** no vendor lock-in. The same containers/Helm run anywhere Kubernetes exists.
