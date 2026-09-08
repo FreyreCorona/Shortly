@@ -34,8 +34,10 @@ metadata:
 data:
   000001_create_url_table.up.sql: |
     CREATE TABLE IF NOT EXISTS urls (
-        id SERIAL PRIMARY KEY,
-        long_url TEXT NOT NULL,
-        short_code VARCHAR(10) UNIQUE NOT NULL,
-        created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+        id BIGSERIAL PRIMARY KEY,
+        original_url TEXT NOT NULL,
+        short_code TEXT NOT NULL UNIQUE,
+        created_at TIMESTAMP DEFAULT NOW()
     );
+  000002_rename_long_url_to_original_url.up.sql: |
+    ALTER TABLE urls RENAME COLUMN long_url TO original_url;
