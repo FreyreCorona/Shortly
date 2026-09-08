@@ -46,7 +46,7 @@ func main() {
 		}
 	})
 
-	address := fmt.Sprintf("amqp://%s:%s@%s:%s/",
+	address := fmt.Sprintf("amqps://%s:%s@%s:%s/",
 		os.Getenv("RABBITMQ_DEFAULT_USER"),
 		os.Getenv("RABBITMQ_DEFAULT_PASS"),
 		os.Getenv("RABBITMQ_HOST"),

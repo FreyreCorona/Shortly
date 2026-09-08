@@ -37,7 +37,7 @@ func main() {
 		log.Fatalf("database connection error :%s", err.Error())
 	}
 
-	publisher, err := rabbitmq.NewProducerPublisher(fmt.Sprintf("amqp://%s:%s@%s:%s/",
+	publisher, err := rabbitmq.NewProducerPublisher(fmt.Sprintf("amqps://%s:%s@%s:%s/",
 		os.Getenv("RABBITMQ_DEFAULT_USER"),
 		os.Getenv("RABBITMQ_DEFAULT_PASS"),
 		os.Getenv("RABBITMQ_HOST"),
