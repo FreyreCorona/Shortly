@@ -16,8 +16,8 @@ resource "aws_mq_broker" "shortly" {
   broker_name        = "shortly-rabbitmq"
   engine_type        = "RabbitMQ"
   engine_version     = "3.13"
-  host_instance_type = "mq.t3.micro"
-
+  host_instance_type = "mq.m7g.medium"
+  auto_minor_version_upgrade = true
   user {
     username = "shortly"
     password = var.rabbit_password
