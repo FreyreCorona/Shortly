@@ -1,3 +1,4 @@
+{{- if .Values.postgres.enabled }}
 # PostgreSQL
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -62,8 +63,10 @@ spec:
     - port: {{ .Values.postgres.port }}
   selector:
     app: postgres
+{{- end }}
 
 ---
+{{- if .Values.valkey.enabled }}
 # Valkey (Cache)
 apiVersion: apps/v1
 kind: Deployment
@@ -107,8 +110,10 @@ spec:
     - port: {{ .Values.valkey.port }}
   selector:
     app: valkey
+{{- end }}
 
 ---
+{{- if .Values.rabbitmq.enabled }}
 # RabbitMQ
 apiVersion: apps/v1
 kind: Deployment
@@ -157,8 +162,10 @@ spec:
       name: prometheus
   selector:
     app: rabbitmq
+{{- end }}
 
 ---
+{{- if .Values.postgres.enabled }}
 # PostgreSQL Exporter
 apiVersion: apps/v1
 kind: Deployment
@@ -192,8 +199,10 @@ spec:
     - port: {{ .Values.postgresExporter.port }}
   selector:
     app: postgres-exporter
+{{- end }}
 
 ---
+{{- if .Values.valkey.enabled }}
 # Valkey Exporter
 apiVersion: apps/v1
 kind: Deployment
@@ -232,6 +241,7 @@ spec:
     - port: {{ .Values.redisExporter.port }}
   selector:
     app: redis-exporter
+{{- end }}
 
 ---
 # Prometheus
@@ -254,18 +264,24 @@ data:
         static_configs:
           - targets: ['redirect-svc:{{ .Values.redirect.metricsPort }}']
 
+      {{- if .Values.postgres.enabled }}
       - job_name: 'postgres-exporter'
         static_configs:
           - targets: ['postgres-exporter:{{ .Values.postgresExporter.port }}']
+      {{- end }}
 
+      {{- if .Values.valkey.enabled }}
       - job_name: 'valkey-exporter'
         static_configs:
           - targets: ['redis-exporter:{{ .Values.redisExporter.port }}']
+      {{- end }}
 
+      {{- if .Values.rabbitmq.enabled }}
       - job_name: 'rabbitmq'
         metrics_path: '/metrics'
         static_configs:
           - targets: ['rabbitmq:{{ .Values.rabbitmq.prometheusPort }}']
+      {{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment

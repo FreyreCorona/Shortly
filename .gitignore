@@ -6,3 +6,6 @@
 /infra/*/*.tfstate
 /infra/*/*.tfstate.*
 /infra/*/terraform.tfvars
+
+# Helm
+/charts/shortly/*.local.yaml

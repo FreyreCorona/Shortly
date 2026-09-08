@@ -1,0 +1,25 @@
+replicaCount: 1
+
+image:
+  pullPolicy: Always
+
+postgres:
+  enabled: false
+  external:
+    host: "shortly-postgres.cu1omq2mukek.us-east-1.rds.amazonaws.com"
+    port: "5432"
+    db: shortly
+    user: postgres
+
+valkey:
+  enabled: false
+  external:
+    host: "shortly-redis.9jswwb.0001.use1.cache.amazonaws.com"
+    port: "6379"
+
+rabbitmq:
+  enabled: false
+  external:
+    host: "b-fe0f2ede-e6ec-4cbf-b09a-707f8fba9e52.mq.us-east-1.on.aws"
+    port: "5671"
+    user: shortly

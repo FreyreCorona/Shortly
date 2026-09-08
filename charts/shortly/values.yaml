@@ -6,6 +6,7 @@ image:
 
 # Database (Postgres)
 postgres:
+  enabled: true
   image: postgres:17
   port: 5432
   db: shortly
@@ -15,12 +16,14 @@ postgres:
 
 # Cache (Valkey)
 valkey:
+  enabled: true
   image: valkey/valkey
   port: 6379
   password: valkey_password
 
 # Message Queue (RabbitMQ)
 rabbitmq:
+  enabled: true
   image: rabbitmq:4-management
   port: 5672
   managementPort: 15672
