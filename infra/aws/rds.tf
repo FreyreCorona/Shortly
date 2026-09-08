@@ -29,7 +29,7 @@ module "rds" {
 
   db_name  = "shortly"
   username = "postgres"
-  manage_master_user_password = true  # RDS genera la password
+  password = var.rds_password
   port     = 5432
 
   vpc_security_group_ids = [aws_security_group.postgres.id]
