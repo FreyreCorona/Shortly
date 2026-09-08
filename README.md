@@ -4,7 +4,7 @@
 
 > 🔬 **Highlights for your CV:**
 > - **Portable by design**: the same Helm chart + containers run on **Oracle Cloud, AWS (EKS), GCP (GKE) or Azure (AKS)**.
-> - **Cloud-native AWS**: when deployed to AWS, infrastructure is delegated to managed services (**RDS**, **ElastiCache**, **Amazon MQ**, **EKS**) provisioned with **Terraform** and deployed via **GitHub Actions with OIDC**.
+> - **Cloud-native AWS**: when deployed to AWS, infrastructure is delegated to managed services (**RDS**, **ElastiCache**, **Amazon MQ**, **EKS**) provisioned with **Terraform**, and the workload is deployed to EKS via **Helm** (CI builds images to GHCR, deploys are manual).
 > - **DevOps/Platform**: IaC, CI/CD, clean architecture, event-driven Go microservices, observability.
 
 ## 🏗️ System Architecture
@@ -98,7 +98,7 @@ The project implements a decoupled architecture with the following components:
 - **API Gateway:** KrakenD.
 - **Observability:** Prometheus &amp; Grafana.
 - **Infrastructure:** Kubernetes (manifests + Helm chart), ready for **EKS / GKE / AKS / Oracle**.
-- **Cloud (AWS):** Amazon EKS, RDS PostgreSQL, ElastiCache Redis, Amazon MQ RabbitMQ, ECR.
+- **Cloud (AWS):** Amazon EKS, RDS PostgreSQL, ElastiCache Redis, Amazon MQ RabbitMQ, GitHub Container Registry (GHCR).
 - **IaC & CI/CD:** Terraform, GitHub Actions (OIDC).
 - **Design Patterns:** Clean Architecture, Repository Pattern, Cache-aside, Pub/Sub.
 
@@ -174,32 +174,34 @@ The most professional way to deploy this project is using **Helm**. It allows yo
 The project is **cloud-agnostic**, but when deployed to AWS it takes full advantage of managed services. This is the recommended path to showcase AWS/native cloud knowledge.
 
 ```
-User → ALB → KrakenD (EKS) → shortener_svc (EKS) ──► Amazon RDS PostgreSQL
-                             redirect_svc (EKS) ──► ElastiCache Redis · Amazon MQ RabbitMQ
+User → KrakenD (EKS) → shortener_svc (EKS) ──► Amazon RDS PostgreSQL
+                        redirect_svc (EKS) ──► ElastiCache Redis · Amazon MQ RabbitMQ
 ```
+
+> The AWS deployment was validated end-to-end (create short URL → 302 redirect) against the managed services. The gateway is reached via `kubectl port-forward` / NodePort; exposing it through ALB + ACM + Route53 is a documented next step.
 
 | Component      | In AWS it runs on         | Why it matters                          |
 |----------------|---------------------------|-----------------------------------------|
 | Microservices  | **Amazon EKS** (Helm)     | Same chart as Oracle/GKE/AKS → portable |
-| Gateway (KrakenD) | EKS + ALB Ingress      | Managed TLS (ACM) + DNS (Route53)       |
+| Gateway (KrakenD) | **EKS** deployment        | Single entry point; exposed via port-forward/NodePort (ALB pending) |
 | PostgreSQL     | **Amazon RDS**            | Backups, Multi-AZ, PITR                  |
 | Valkey cache   | **ElastiCache Redis**     | Valkey = Redis fork → compatible client |
 | RabbitMQ       | **Amazon MQ for RabbitMQ**| Managed AMQP broker                      |
-| Images         | **Amazon ECR**            | Private registry                         |
-| CI/CD          | **GitHub Actions + OIDC** | No exposed AWS keys                      |
+| Images         | **GHCR**                  | Private images pulled via `regcred`      |
+| CI/CD          | **GitHub Actions**        | Testing + Build Images; manual Helm deploys |
 | IaC            | **Terraform**             | VPC, EKS, RDS, ElastiCache, MQ, IAM      |
 
 
 **Key advantages:**
 - **Portability:** no vendor lock-in. The same containers/Helm run anywhere Kubernetes exists.
 - **Managed data plane:** no need to self-host Postgres/Valkey/RabbitMQ pods and their storage.
-- **Security:** GitHub OIDC federation, restricted Security Groups, secrets from AWS Secrets Manager/SSM.
+- **Security:** restricted Security Groups; secrets externalized (gitignored `terraform.tfvars` + `values-aws.local.yaml`).
 
 ---
 
 ## 📖 API Documentation
 
-The system exposes its services through the `krakend` service (NodePort `30080` locally; ALB Ingress in the AWS deployment).
+The system exposes its services through the `krakend` service (NodePort `30080` locally; on AWS via `kubectl port-forward` or NodePort).
 
 ### 1. Create a Short URL
 **Endpoint:** `POST /shortly/create`
