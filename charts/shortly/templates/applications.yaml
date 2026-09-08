@@ -13,6 +13,10 @@ spec:
       labels:
         app: shortener-svc
     spec:
+      {{- if .Values.image.pullSecret }}
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
+      {{- end }}
       containers:
         - name: shortener-svc
           image: {{ .Values.shortener.image }}
@@ -59,6 +63,10 @@ spec:
       labels:
         app: redirect-svc
     spec:
+      {{- if .Values.image.pullSecret }}
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
+      {{- end }}
       containers:
         - name: redirect-svc
           image: {{ .Values.redirect.image }}
@@ -141,6 +149,10 @@ spec:
       labels:
         app: krakend
     spec:
+      {{- if .Values.image.pullSecret }}
+      imagePullSecrets:
+        - name: {{ .Values.image.pullSecret }}
+      {{- end }}
       containers:
         - name: krakend
           image: {{ .Values.krakend.image }}
